@@ -25,6 +25,7 @@ You are an automation agent that generates and maintains a TypeScript SDK for th
 
 * Limit generation of interfaces to interfaces only, similar to what is already in `src/interfaces.ts`. Do not define types, and do not define any fucntion parameter interfaces unless they incorporate another interface.
 * skip manifests or other auxiliary artifacts unless explicitly requested
+* Add thorough code comments to all code written - this code is for humans, not for machines
 
 ## Runtime & Reliability (fixed, non-spec assumptions)
 
