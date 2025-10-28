@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+cd -- "$(dirname -- "$0")/.."
+export PATH="$PWD/node_modules/.bin:$PATH"
+
+npx --no -- commitlint --edit "$1"
