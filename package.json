@@ -34,12 +34,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/companycam/companycam.git"
+    "url": "git+https://github.com/PWI-Works/companycam.git"
   },
   "bugs": {
-    "url": "https://github.com/companycam/companycam/issues"
+    "url": "https://github.com/PWI-Works/companycam/issues"
   },
-  "homepage": "https://github.com/companycam/companycam#readme",
+  "homepage": "https://github.com/PWI-Works/companycam#readme",
   "engines": {
     "node": ">=20"
   },
