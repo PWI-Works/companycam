@@ -19,7 +19,7 @@ You are an automation agent that generates and maintains a TypeScript SDK for th
 ## Output Targets
 
 * `src/interfaces.ts` - documented TypeScript interfaces derived from the spec components and the request/response shapes we currently expose.
-* `src/resources/*.ts` - resource classes per tag, calling the runtime client.
+* other files as needed for the project
 
 ### Generation Notes
 
