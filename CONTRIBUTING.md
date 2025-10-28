@@ -5,7 +5,7 @@ We are excited to have you collaborate on the CompanyCam TypeScript SDK. This do
 ## Getting Started
 
 1. **Discuss your idea** – Open an issue to describe bugs, enhancements, or questions before you begin.
-2. **Set up your environment** – Install the required tooling (Node.js 20+, npm 9+) and clone this repository.
+2. **Set up your environment** – Install the required tooling and clone this repository.
 3. **Read the OpenAPI spec** – The `companycam-openapi-spec.yaml` file is the single source of truth for all generated outputs.
 
 ## Development Workflow
