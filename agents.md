@@ -18,8 +18,14 @@ You are an automation agent that generates and maintains a TypeScript SDK for th
 
 ## Output Targets
 
-* `src/types.ts` — TS types/interfaces from `components` and operation I/O shapes.
-* `src/resources/*.ts` — resource classes per tag, calling the runtime client.
+* `src/interfaces.ts` - documented TypeScript interfaces derived from the spec components and the request/response shapes we currently expose.
+* other files as needed for the project
+
+### Generation Notes
+
+* Limit generation of interfaces to interfaces only, similar to what is already in `src/interfaces.ts`. Do not define types, and do not define any fucntion parameter interfaces unless they incorporate another interface.
+* skip manifests or other auxiliary artifacts unless explicitly requested
+* Add thorough code comments to all code written - this code is for humans, not for machines
 
 ## Runtime & Reliability (fixed, non-spec assumptions)
 
