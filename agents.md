@@ -19,7 +19,6 @@ You are an automation agent that generates and maintains a TypeScript SDK for th
 ## Output Targets
 
 * `src/types.ts` — TS types/interfaces from `components` and operation I/O shapes.
-* `src/manifest.json` — normalized operation metadata (method, path, params, request/response types, errors).
 * `src/resources/*.ts` — resource classes per tag, calling the runtime client.
 
 ## Runtime & Reliability (fixed, non-spec assumptions)
