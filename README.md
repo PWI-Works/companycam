@@ -16,4 +16,11 @@ Before getting started, please read our [Contributing Guide](CONTRIBUTING.md) fo
 
 ## Changelog and versioning
 
-All notable updates are recorded in [`CHANGELOG.md`](CHANGELOG.md). Follow [Semantic Versioning](https://semver.org/) when planning releases, and document each set of changes under a new version heading with a short summary of the impact. Keeping the changelog current ensures everyone can trace what shipped in each release.
+We follow [Semantic Versioning](https://semver.org/) and automate releases with [semantic-release](https://semantic-release.gitbook.io/semantic-release/). Merges to `main` with Conventional Commit messages trigger the pipeline to:
+
+- determine the next version number;
+- publish the package to npm;
+- generate release notes and update [`CHANGELOG.md`](CHANGELOG.md);
+- create a GitHub release and tag.
+
+No manual version bumps or changelog edits are required—just keep commit messages compliant with the Conventional Commits specification.

@@ -18,11 +18,10 @@ We are excited to have you collaborate on the CompanyCam TypeScript SDK. This do
 
 ## Versioning and Changelog Management
 
-We follow [Semantic Versioning](https://semver.org/). When your change is ready to merge:
+We follow [Semantic Versioning](https://semver.org/) and use [semantic-release](https://semantic-release.gitbook.io/semantic-release/) to ship packages. To keep the automation happy:
 
-- Determine the appropriate version bump (patch, minor, or major) based on the impact of your change.
-- Update [`CHANGELOG.md`](CHANGELOG.md) with a new version heading (for example, `## v1.2.3 - 2024-01-31`) and a short summary of the change.
-- Keep entries concise and focused on what consumers of the SDK need to know.
+- Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) in every pull request so semantic-release can determine the correct version bump.
+- Do **not** edit [`CHANGELOG.md`](CHANGELOG.md) or the package version manually—the release workflow updates them after each merge to `main`.
 
 ## Pull Request Checklist
 
@@ -32,7 +31,7 @@ Before requesting a review:
 - [ ] Confirm that all generated files stay in sync with `companycam-openapi-spec.yaml`.
 - [ ] Resolve **all** GitHub Copilot review comments if Copilot opens a review on your PR.
 - [ ] Ensure tests and quality checks pass locally.
-- [ ] Update the changelog with the version bump and summary for your change.
+- [ ] Ensure your commits follow the Conventional Commits spec so semantic-release can infer the next version.
 
 When the checklist is complete, request a review from **@jmiller-pwi**. A human reviewer will merge once everything looks good.
 
