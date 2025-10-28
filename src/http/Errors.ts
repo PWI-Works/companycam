@@ -1,10 +1,17 @@
-import type { AxiosError } from 'axios';
+import type { AxiosError } from "axios";
 
+/**
+ * Shape of the error payload returned by the CompanyCam API.
+ * Mirrors the `components.schemas.Error` object in the OpenAPI document.
+ */
 export interface APIProblem {
   errors?: string[];
   [key: string]: unknown;
 }
 
+/**
+ * Options for constructing an {@link APIError}.
+ */
 export interface APIErrorOptions {
   status?: number;
   code?: string;
@@ -25,9 +32,12 @@ export class APIError extends Error {
   readonly method?: string;
   readonly url?: string;
 
+  /**
+   * Represent a failed API request with structured metadata.
+   */
   constructor(message: string, options: APIErrorOptions = {}) {
     super(message);
-    this.name = 'APIError';
+    this.name = "APIError";
     this.status = options.status;
     this.code = options.code;
     this.problem = options.problem;
@@ -46,20 +56,24 @@ export class APIError extends Error {
     const problem = (response?.data ?? undefined) as APIProblem | undefined;
     const errors = Array.isArray(problem?.errors) ? problem?.errors : undefined;
     const requestId =
-      response?.headers?.['x-request-id'] ?? response?.headers?.['x-amzn-requestid'];
+      response?.headers?.["x-request-id"] ??
+      response?.headers?.["x-amzn-requestid"];
 
     const message =
       errors?.[0] ||
       response?.statusText ||
       error.message ||
-      'Unexpected API error';
+      "Unexpected API error";
 
     return new APIError(message, {
       status: response?.status,
-      code: problem && typeof problem === 'object' && 'code' in problem ? (problem as { code?: string }).code : undefined,
+      code:
+        problem && typeof problem === "object" && "code" in problem
+          ? (problem as { code?: string }).code
+          : undefined,
       problem,
       headers: response?.headers as Record<string, unknown> | undefined,
-      requestId: typeof requestId === 'string' ? requestId : undefined,
+      requestId: typeof requestId === "string" ? requestId : undefined,
       method: request?.method?.toUpperCase(),
       url: request?.url,
       cause: error,
