@@ -2,6 +2,9 @@
 
 // Schemas
 
+/**
+ * Representation of the company.
+ */
 export interface Company {
   id: string;
   name: string;
@@ -10,6 +13,9 @@ export interface Company {
   logo?: Array<ImageURI>;
 }
 
+/**
+ * Representation of the user.
+ */
 export interface User {
   id: string;
   company_id?: string;
@@ -24,6 +30,9 @@ export interface User {
   user_url?: string;
 }
 
+/**
+ * Representation of the project.
+ */
 export interface Project {
   id: string;
   company_id?: string;
@@ -48,6 +57,9 @@ export interface Project {
   updated_at?: number;
 }
 
+/**
+ * Representation of the photo.
+ */
 export interface Photo {
   id: string;
   company_id?: string;
@@ -72,6 +84,9 @@ export interface Photo {
   updated_at?: number;
 }
 
+/**
+ * Representation of the tag.
+ */
 export interface Tag {
   id: string;
   company_id?: string;
@@ -81,6 +96,9 @@ export interface Tag {
   updated_at?: number;
 }
 
+/**
+ * Representation of the group.
+ */
 export interface Group {
   id: string;
   company_id?: string;
@@ -92,6 +110,9 @@ export interface Group {
   updated_at?: number;
 }
 
+/**
+ * Representation of the webhook.
+ */
 export interface Webhook {
   id: string;
   company_id?: string;
@@ -103,12 +124,18 @@ export interface Webhook {
   updated_at?: number;
 }
 
+/**
+ * Representation of the image uri.
+ */
 export interface ImageURI {
   type: string;
   uri: string;
   url?: string;
 }
 
+/**
+ * Representation of the address.
+ */
 export interface Address {
   street_address_1?: string | null;
   street_address_2?: string | null;
@@ -118,11 +145,17 @@ export interface Address {
   country?: string | null;
 }
 
+/**
+ * Standard pagination parameters used across list endpoints.
+ */
 export interface PaginationQueryParams {
   page?: number;
   per_page?: number;
 }
 
+/**
+ * Optional header for impersonating a specific CompanyCam user when performing requests.
+ */
 export interface UserContextHeaderParams {
   /**
    * Email of CompanyCam user to be designated as the actor for the request.
@@ -130,6 +163,9 @@ export interface UserContextHeaderParams {
   "X-CompanyCam-User"?: string;
 }
 
+/**
+ * Representation of the checklist.
+ */
 export interface Checklist {
   id?: string;
   company_id?: string;
@@ -145,6 +181,9 @@ export interface Checklist {
   sections?: Array<ChecklistSection>;
 }
 
+/**
+ * Representation of the checklist section.
+ */
 export interface ChecklistSection {
   id?: string;
   todo_list_id?: string;
@@ -156,6 +195,9 @@ export interface ChecklistSection {
   tasks?: Array<Task>;
 }
 
+/**
+ * Representation of the task.
+ */
 export interface Task {
   id?: string;
   completed_at?: number;
@@ -175,6 +217,9 @@ export interface Task {
   photos?: Array<Photo>;
 }
 
+/**
+ * Representation of the sub task.
+ */
 export interface SubTask {
   id?: string;
   label?: string;
@@ -186,6 +231,9 @@ export interface SubTask {
   answer_text?: string;
 }
 
+/**
+ * Representation of the checklist template.
+ */
 export interface ChecklistTemplate {
   id?: string;
   company_id?: string;
@@ -195,16 +243,25 @@ export interface ChecklistTemplate {
   updated_at?: number;
 }
 
+/**
+ * Representation of the coordinate.
+ */
 export interface Coordinate {
   lat: number;
   lon: number;
 }
 
+/**
+ * Representation of the project integration.
+ */
 export interface ProjectIntegration {
   type: string;
   relation_id: string;
 }
 
+/**
+ * Representation of the comment.
+ */
 export interface Comment {
   id: string;
   creator_id?: string;
@@ -218,6 +275,9 @@ export interface Comment {
   updated_at?: number;
 }
 
+/**
+ * Representation of the document.
+ */
 export interface Document {
   id: string;
   creator_id?: string;
@@ -232,6 +292,9 @@ export interface Document {
   updated_at?: number;
 }
 
+/**
+ * Representation of the project contact response.
+ */
 export interface ProjectContactResponse {
   id?: string;
   project_id?: string;
@@ -242,20 +305,32 @@ export interface ProjectContactResponse {
   updated_at?: number;
 }
 
+/**
+ * Representation of the error.
+ */
 export interface Error {
   errors?: Array<string>;
 }
 
+/**
+ * Representation of the project contact request.
+ */
 export interface ProjectContactRequest {
   name: string;
   email?: string;
   phone_number?: string;
 }
 
+/**
+ * Representation of the project notepad.
+ */
 export interface ProjectNotepad {
   notepad: string;
 }
 
+/**
+ * Representation of the project collaborator.
+ */
 export interface ProjectCollaborator {
   id?: string;
   company_id?: string;
@@ -266,6 +341,9 @@ export interface ProjectCollaborator {
   updated_at?: number;
 }
 
+/**
+ * Representation of the project invitation.
+ */
 export interface ProjectInvitation {
   id?: string;
   project_id?: string;
@@ -281,10 +359,16 @@ export interface ProjectInvitation {
 
 // Operations
 
+/**
+ * Query parameters accepted by the list checklists q operation.
+ */
 export interface ListChecklistsQueryParams extends PaginationQueryParams {
   completed?: boolean;
 }
 
+/**
+ * Request body payload for the create user operation.
+ */
 export interface CreateUserRequestBody {
   user?: {
     first_name?: string;
@@ -296,6 +380,9 @@ export interface CreateUserRequestBody {
   };
 }
 
+/**
+ * Request body payload for the update user operation.
+ */
 export interface UpdateUserRequestBody {
   first_name?: string;
   last_name?: string;
@@ -304,11 +391,17 @@ export interface UpdateUserRequestBody {
   password?: string;
 }
 
+/**
+ * Query parameters accepted by the list projects q operation.
+ */
 export interface ListProjectsQueryParams extends PaginationQueryParams {
   query?: string;
   modified_since?: string;
 }
 
+/**
+ * Request body payload for the create project operation.
+ */
 export interface CreateProjectRequestBody {
   name?: string;
   address?: Address;
@@ -317,6 +410,9 @@ export interface CreateProjectRequestBody {
   primary_contact?: ProjectContactRequest;
 }
 
+/**
+ * Request body payload for the update project operation.
+ */
 export interface UpdateProjectRequestBody {
   name?: string;
   address?: Address;
@@ -324,6 +420,9 @@ export interface UpdateProjectRequestBody {
   geofence?: Array<Coordinate>;
 }
 
+/**
+ * Query parameters accepted by the list project photos q operation.
+ */
 export interface ListProjectPhotosQueryParams extends PaginationQueryParams {
   start_date?: string;
   end_date?: string;
@@ -332,6 +431,9 @@ export interface ListProjectPhotosQueryParams extends PaginationQueryParams {
   tag_ids?: Array<number>;
 }
 
+/**
+ * Request body payload for the create project photo operation.
+ */
 export interface CreateProjectPhotoRequestBody {
   photo: {
     coordinates?: Coordinate;
@@ -342,16 +444,25 @@ export interface CreateProjectPhotoRequestBody {
   };
 }
 
+/**
+ * Request body payload for the update project notepad operation.
+ */
 export interface UpdateProjectNotepadRequestBody {
   notepad: string;
 }
 
+/**
+ * Request body payload for the create project labels operation.
+ */
 export interface CreateProjectLabelsRequestBody {
   project?: {
     labels?: Array<string>;
   };
 }
 
+/**
+ * Request body payload for the create project document operation.
+ */
 export interface CreateProjectDocumentRequestBody {
   document?: {
     name?: string;
@@ -359,16 +470,25 @@ export interface CreateProjectDocumentRequestBody {
   };
 }
 
+/**
+ * Request body payload for the create project comment operation.
+ */
 export interface CreateProjectCommentRequestBody {
   comment?: {
     content?: string;
   };
 }
 
+/**
+ * Request body payload for the create project checklist operation.
+ */
 export interface CreateProjectChecklistRequestBody {
   checklist_template_id?: string;
 }
 
+/**
+ * Query parameters accepted by the list photos q operation.
+ */
 export interface ListPhotosQueryParams extends PaginationQueryParams {
   start_date?: string;
   end_date?: string;
@@ -377,38 +497,59 @@ export interface ListPhotosQueryParams extends PaginationQueryParams {
   tag_ids?: Array<number>;
 }
 
+/**
+ * Request body payload for the update photo operation.
+ */
 export interface UpdatePhotoRequestBody {
   photo?: {
     internal?: boolean;
   };
 }
 
+/**
+ * Request body payload for the create photo tags operation.
+ */
 export interface CreatePhotoTagsRequestBody {
   tags?: Array<string>;
 }
 
+/**
+ * Request body payload for the create photo comment operation.
+ */
 export interface CreatePhotoCommentRequestBody {
   comment?: {
     content?: string;
   };
 }
 
+/**
+ * Request body payload for the update photo description operation.
+ */
 export interface UpdatePhotoDescriptionRequestBody {
   description?: string;
 }
 
+/**
+ * Request body payload for the create tag operation.
+ */
 export interface CreateTagRequestBody {
   tag?: {
     display_value?: string;
   };
 }
 
+/**
+ * Request body payload for the update tag operation.
+ */
 export interface UpdateTagRequestBody {
   tag?: {
     display_value?: string;
   };
 }
 
+/**
+ * Request body payload for the create group operation.
+ */
 export interface CreateGroupRequestBody {
   group?: {
     name?: string;
@@ -416,6 +557,9 @@ export interface CreateGroupRequestBody {
   };
 }
 
+/**
+ * Request body payload for the update group operation.
+ */
 export interface UpdateGroupRequestBody {
   group?: {
     name?: string;
@@ -423,6 +567,9 @@ export interface UpdateGroupRequestBody {
   };
 }
 
+/**
+ * Request body payload for the create webhook operation.
+ */
 export interface CreateWebhookRequestBody {
   url?: string;
   scopes?: Array<string>;
@@ -430,6 +577,9 @@ export interface CreateWebhookRequestBody {
   token?: string;
 }
 
+/**
+ * Request body payload for the update webhook operation.
+ */
 export interface UpdateWebhookRequestBody {
   url?: string;
   scopes?: Array<string>;
