@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/PWI-Works/companycam/compare/v1.0.1...v1.0.2) (2025-10-28)
+
+
+### Bug Fixes
+
+* **package:** update package name ([2638ed9](https://github.com/PWI-Works/companycam/commit/2638ed9060ec3e39b7d73d629c4e793cbfc03e53))
+
 ## [1.0.1](https://github.com/PWI-Works/companycam/compare/v1.0.0...v1.0.1) (2025-10-28)
 
 
