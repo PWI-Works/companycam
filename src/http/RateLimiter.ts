@@ -1,3 +1,12 @@
+type AbortHandler = () => void;
+
+interface AbortSignalLike {
+  readonly aborted: boolean;
+  addEventListener?: (type: 'abort', listener: AbortHandler, options?: { once?: boolean }) => void;
+  removeEventListener?: (type: 'abort', listener: AbortHandler) => void;
+  onabort?: AbortHandler | null;
+}
+
 export interface RateLimiterOptions {
   /**
    * Maximum number of tokens that can be consumed within a full interval.
@@ -13,7 +22,7 @@ export interface RateLimiterOptions {
 interface PendingRequest {
   resolve: () => void;
   reject: (reason?: unknown) => void;
-  signal?: AbortSignal;
+  signal?: AbortSignalLike;
 }
 
 /**
@@ -41,7 +50,7 @@ export class RateLimiter {
    * Acquire a single token before proceeding.
    * The returned promise resolves when a token is allocated.
    */
-  acquire(signal?: AbortSignal): Promise<void> {
+  acquire(signal?: AbortSignalLike): Promise<void> {
     if (signal?.aborted) {
       return Promise.reject(createAbortError());
     }
@@ -59,12 +68,10 @@ export class RateLimiter {
         reject(createAbortError());
       };
 
-      if (signal) {
-        signal.addEventListener('abort', onAbort, { once: true });
-      }
+      const detachAbort = attachAbortListener(signal, onAbort);
 
       pending.resolve = () => {
-        signal?.removeEventListener('abort', onAbort);
+        detachAbort?.();
         resolve();
       };
 
@@ -120,4 +127,33 @@ function createAbortError(): Error {
   const error = new Error('Operation aborted');
   error.name = 'AbortError';
   return error;
+}
+
+function attachAbortListener(
+  signal: AbortSignalLike | undefined,
+  handler: AbortHandler
+): (() => void) | undefined {
+  if (!signal) {
+    return undefined;
+  }
+
+  if (typeof signal.addEventListener === 'function') {
+    signal.addEventListener('abort', handler, { once: true });
+    return () => signal.removeEventListener?.('abort', handler);
+  }
+
+  if ('onabort' in signal) {
+    const previous = signal.onabort;
+    signal.onabort = () => {
+      handler();
+      if (typeof previous === 'function') {
+        previous.call(signal);
+      }
+    };
+    return () => {
+      signal.onabort = previous ?? null;
+    };
+  }
+
+  return undefined;
 }
