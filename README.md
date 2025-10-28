@@ -24,3 +24,27 @@ We follow [Semantic Versioning](https://semver.org/) and automate releases with 
 - create a GitHub release and tag.
 
 No manual version bumps or changelog edits are required—just keep commit messages compliant with the Conventional Commits specification.
+
+### Commit message guidelines
+
+This repository enforces Conventional Commits with commitlint to keep the semantic-release pipeline running smoothly. You can commit in either of the following ways:
+
+- Use the guided prompt: `npm run commit`
+- Craft your own commit message and let the hook validate it on `git commit`
+
+Refer to the Conventional Commits specification for the allowed prefixes (`feat`, `fix`, `chore`, etc.). If the hook blocks your commit, adjust the message to match the format: `type(scope): short description`.
+
+#### Allowed prefixes and release impact
+
+Semantic-release inspects the `type` field to determine how to version the next release:
+
+- `feat`: triggers a **minor** version bump.
+- `fix`, `perf`, `refactor`, `docs`, `chore`, `test`, `build`, `ci`, `style`: treated as **patch** updates (no feature bump).
+- Append `!` to any type (for example, `feat!`) or include `BREAKING CHANGE:` in the body to signal a **major** version bump.
+
+#### Passing commit examples
+
+- `feat(http): add retry jitter to axios client`
+- `fix(rate-limiter): prevent token leak on abort`
+- `docs: document commit message flow`
+- `chore!: drop Node 18 support (BREAKING CHANGE: requires Node 20)`
