@@ -1,5 +1,5 @@
 {
-  "name": "@companycam/sdk",
+  "name": "@PWI-Works/companycam",
   "version": "1.0.1",
   "description": "TypeScript SDK for the CompanyCam API generated from the published OpenAPI specification.",
   "type": "module",
