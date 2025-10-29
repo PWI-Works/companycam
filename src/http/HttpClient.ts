@@ -3,11 +3,11 @@ import axios, {
   AxiosRequestConfig,
   AxiosResponse,
   isAxiosError,
-} from 'axios';
-import axiosRetry, { isNetworkError } from 'axios-retry';
-import type { AxiosError } from 'axios';
-import { RateLimiter } from './RateLimiter.js';
-import { APIError } from './Errors.js';
+} from "axios";
+import axiosRetry, { isNetworkError } from "axios-retry";
+import type { AxiosError } from "axios";
+import { RateLimiter } from "./RateLimiter.js";
+import { APIError } from "./Errors.js";
 
 export interface RetryOptions {
   /**
@@ -53,7 +53,7 @@ export interface HttpRequestOptions<T = unknown> extends AxiosRequestConfig<T> {
   useRateLimiter?: boolean;
 }
 
-const IDEMPOTENT_METHODS = new Set(['GET', 'PUT', 'PATCH', 'DELETE']);
+const IDEMPOTENT_METHODS = new Set(["GET", "PUT", "PATCH", "DELETE"]);
 const BASE_DELAY_MS = 200;
 const MAX_DELAY_MS = 8_000;
 
@@ -69,7 +69,7 @@ export class HttpClient {
     this.authToken = config.authToken;
 
     this.defaultHeaders = {
-      Accept: 'application/json',
+      Accept: "application/json",
       ...(config.defaultHeaders ?? {}),
     };
 
@@ -80,7 +80,10 @@ export class HttpClient {
       ...config.axiosOptions,
     });
 
-    Object.assign(this.axiosInstance.defaults.headers.common, this.defaultHeaders);
+    Object.assign(
+      this.axiosInstance.defaults.headers.common,
+      this.defaultHeaders
+    );
     if (this.authToken) {
       this.axiosInstance.defaults.headers.common.Authorization = `Bearer ${this.authToken}`;
     }
@@ -92,7 +95,8 @@ export class HttpClient {
       retries: retryConfig.retries ?? 3,
       shouldResetTimeout: true,
       retryCondition: (error) => this.shouldRetry(error),
-      retryDelay: (retryCount, error) => this.computeRetryDelay(retryCount, error),
+      retryDelay: (retryCount, error) =>
+        this.computeRetryDelay(retryCount, error),
       onRetry: retryConfig.onRetry,
     });
 
@@ -121,7 +125,9 @@ export class HttpClient {
     const requestConfig = this.prepareRequestConfig(options);
 
     try {
-      return await this.axiosInstance.request<T, AxiosResponse<T>, D>(requestConfig);
+      return await this.axiosInstance.request<T, AxiosResponse<T>, D>(
+        requestConfig
+      );
     } catch (error) {
       if (isAxiosError(error)) {
         throw APIError.fromAxios(error);
@@ -139,7 +145,9 @@ export class HttpClient {
     }
   }
 
-  private prepareRequestConfig<D>(options: HttpRequestOptions<D>): AxiosRequestConfig<D> {
+  private prepareRequestConfig<D>(
+    options: HttpRequestOptions<D>
+  ): AxiosRequestConfig<D> {
     const {
       authToken,
       idempotencyKey,
@@ -151,11 +159,15 @@ export class HttpClient {
     const mergedHeaders: Record<string, string> = { ...this.defaultHeaders };
 
     if (headers) {
-      for (const [key, value] of Object.entries(headers as Record<string, unknown>)) {
+      for (const [key, value] of Object.entries(
+        headers as Record<string, unknown>
+      )) {
         if (value === undefined || value === null) {
           continue;
         }
-        mergedHeaders[key] = Array.isArray(value) ? value.join(', ') : String(value);
+        mergedHeaders[key] = Array.isArray(value)
+          ? value.join(", ")
+          : String(value);
       }
     }
 
@@ -164,7 +176,7 @@ export class HttpClient {
       mergedHeaders.Authorization = `Bearer ${token}`;
     }
     if (idempotencyKey) {
-      mergedHeaders['Idempotency-Key'] = idempotencyKey;
+      mergedHeaders["Idempotency-Key"] = idempotencyKey;
     }
 
     return {
@@ -180,13 +192,17 @@ export class HttpClient {
     const isMethodRetryable =
       !method ||
       IDEMPOTENT_METHODS.has(method) ||
-      (this.allowPostRetry && method === 'POST');
+      (this.allowPostRetry && method === "POST");
 
     if (!isMethodRetryable) {
       return false;
     }
 
-    if (status === 408 || status === 429 || (status !== undefined && status >= 500)) {
+    if (
+      status === 408 ||
+      status === 429 ||
+      (status !== undefined && status >= 500)
+    ) {
       return true;
     }
 
@@ -208,7 +224,7 @@ export class HttpClient {
   }
 
   private getRetryAfterDelay(error: AxiosError): number | null {
-    const header = error.response?.headers?.['retry-after'];
+    const header = error.response?.headers?.["retry-after"];
     if (!header) {
       return null;
     }

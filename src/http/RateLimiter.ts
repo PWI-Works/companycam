@@ -1,9 +1,13 @@
-type AbortHandler = () => void;
+export type AbortHandler = () => void;
 
-interface AbortSignalLike {
+export interface AbortSignalLike {
   readonly aborted: boolean;
-  addEventListener?: (type: 'abort', listener: AbortHandler, options?: { once?: boolean }) => void;
-  removeEventListener?: (type: 'abort', listener: AbortHandler) => void;
+  addEventListener?: (
+    type: "abort",
+    listener: AbortHandler,
+    options?: { once?: boolean }
+  ) => void;
+  removeEventListener?: (type: "abort", listener: AbortHandler) => void;
   onabort?: AbortHandler | null;
 }
 
@@ -61,7 +65,11 @@ export class RateLimiter {
     }
 
     return new Promise<void>((resolve, reject) => {
-      const pending: PendingRequest = { resolve: () => resolve(), reject, signal };
+      const pending: PendingRequest = {
+        resolve: () => resolve(),
+        reject,
+        signal,
+      };
 
       const onAbort = () => {
         this.removeFromQueue(pending);
@@ -86,7 +94,7 @@ export class RateLimiter {
     clearInterval(this.refillHandle);
     while (this.queue.length > 0) {
       const pending = this.queue.shift();
-      pending?.reject(new Error('Rate limiter disposed'));
+      pending?.reject(new Error("Rate limiter disposed"));
     }
   }
 
@@ -124,8 +132,8 @@ export class RateLimiter {
 }
 
 function createAbortError(): Error {
-  const error = new Error('Operation aborted');
-  error.name = 'AbortError';
+  const error = new Error("Operation aborted");
+  error.name = "AbortError";
   return error;
 }
 
@@ -137,16 +145,16 @@ function attachAbortListener(
     return undefined;
   }
 
-  if (typeof signal.addEventListener === 'function') {
-    signal.addEventListener('abort', handler, { once: true });
-    return () => signal.removeEventListener?.('abort', handler);
+  if (typeof signal.addEventListener === "function") {
+    signal.addEventListener("abort", handler, { once: true });
+    return () => signal.removeEventListener?.("abort", handler);
   }
 
-  if ('onabort' in signal) {
+  if ("onabort" in signal) {
     const previous = signal.onabort;
     signal.onabort = () => {
       handler();
-      if (typeof previous === 'function') {
+      if (typeof previous === "function") {
         previous.call(signal);
       }
     };
