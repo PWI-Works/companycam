@@ -4,15 +4,15 @@ We are excited to have you collaborate on the CompanyCam TypeScript SDK. This do
 
 ## Getting Started
 
-1. **Discuss your idea** – Open an issue to describe bugs, enhancements, or questions before you begin.
-2. **Set up your environment** – Install the required tooling and clone this repository.
-3. **Familiarize yourself with the OpenAPI spec** – The `companycam-openapi-spec.yaml` file is the single source of truth for all funcationality. Sourced from [CompanyCam/openapi-spec](https://github.com/CompanyCam/openapi-spec).
+1. **Discuss your idea** - Open an issue to describe bugs, enhancements, or questions before you begin.
+2. **Set up your environment** - Install the required tooling and clone this repository.
+3. **Familiarize yourself with the OpenAPI spec** - The `companycam-openapi-spec.yaml` file is the single source of truth for all funcationality. Sourced from [CompanyCam/openapi-spec](https://github.com/CompanyCam/openapi-spec).
 
 ## Development Workflow
 
 1. **Create a new branch** from `main`.
 2. **Implement your changes** following the guidelines in [`agents.md`](agents.md).
-3. **Add or update tests** when applicable. (Testing scripts will be documented alongside the generated code.)
+3. **Add or update tests** for every behavioral change. New features must ship with accompanying tests that demonstrate the change.
 4. **Generate or update artifacts** from the OpenAPI spec as needed.
 5. **Ensure linting and formatting** match existing standards when they become available in the project.
 
@@ -21,7 +21,7 @@ We are excited to have you collaborate on the CompanyCam TypeScript SDK. This do
 We follow [Semantic Versioning](https://semver.org/) and use [semantic-release](https://semantic-release.gitbook.io/semantic-release/) to ship packages. To keep the automation happy:
 
 - Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) in every pull request so semantic-release can determine the correct version bump.
-- Do **not** edit [`CHANGELOG.md`](CHANGELOG.md) or the package version manually—the release workflow updates them after each merge to `main`.
+- Do **not** edit [`CHANGELOG.md`](CHANGELOG.md) or the package version manually--the release workflow updates them after each merge to `main`.
 
 ## Pull Request Checklist
 

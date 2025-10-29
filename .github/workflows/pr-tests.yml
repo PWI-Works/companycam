@@ -1,0 +1,38 @@
+name: PR Tests
+
+on:
+  pull_request:
+    # Run the suite on every PR so reviewers see a green check before merging.
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  vitest:
+    name: Run Vitest suite
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        # Ensure we test the exact contents proposed in the pull request.
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        # Align with the minimum supported Node version recorded in package.json.
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        # npm ci respects the lockfile so contributors get deterministic installs.
+        run: npm ci
+
+      - name: Run vitest
+        # CI=true makes sure watchers or interactive prompts stay disabled in automation.
+        run: npm test
+        env:
+          CI: true
