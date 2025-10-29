@@ -15,6 +15,7 @@ You are an automation agent that generates and maintains a TypeScript SDK for th
 * **Always read the spec file first.** If it is missing, unreadable, or invalid, stop and report an error.
 * **Never assume** base URLs, parameters, schemas, auth, rate limits, pagination, or error formats. Use only what the spec declares.
 * **Only generate/update** artifacts directly from the spec. Do not hand-edit generated outputs.
+* **Always author or verify unit tests** for every feature you touch. If functionality changes, update or add tests to prove the behavior; if it stays the same, confirm existing coverage still passes.
 
 ## Output Targets
 
