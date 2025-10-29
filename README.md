@@ -12,7 +12,7 @@ Thank you for your interest in contributing—your ideas, issues, and improvemen
 
 ## Contributing
 
-Before getting started, please read our [Contributing Guide](CONTRIBUTING.md) for details on development workflows, changelog expectations, and review requirements.
+We welcome all contributions! Before getting started, please read our [Contributing Guide](CONTRIBUTING.md) for details on development workflows, changelog expectations, and review requirements.
 
 ## Changelog and versioning
 

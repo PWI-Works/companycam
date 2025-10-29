@@ -6,11 +6,11 @@ We are excited to have you collaborate on the CompanyCam TypeScript SDK. This do
 
 1. **Discuss your idea** – Open an issue to describe bugs, enhancements, or questions before you begin.
 2. **Set up your environment** – Install the required tooling and clone this repository.
-3. **Read the OpenAPI spec** – The `companycam-openapi-spec.yaml` file is the single source of truth for all generated outputs.
+3. **Familiarize yourself with the OpenAPI spec** – The `companycam-openapi-spec.yaml` file is the single source of truth for all funcationality. Sourced from [CompanyCam/openapi-spec](https://github.com/CompanyCam/openapi-spec).
 
 ## Development Workflow
 
-1. **Create a feature branch** from `main`.
+1. **Create a new branch** from `main`.
 2. **Implement your changes** following the guidelines in [`agents.md`](agents.md).
 3. **Add or update tests** when applicable. (Testing scripts will be documented alongside the generated code.)
 4. **Generate or update artifacts** from the OpenAPI spec as needed.
