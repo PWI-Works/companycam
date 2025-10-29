@@ -38,21 +38,36 @@ Refer to the Conventional Commits specification for the allowed prefixes (`feat`
 
 Semantic-release inspects the `type` field of your commit messages to determine how to version the next release. Use the table below to choose the appropriate prefix for your commit:
 
-|     | Prefix     | Title                    | Description                                                                       | Version impact\* |
-| --- | ---------- | ------------------------ | --------------------------------------------------------------------------------- | ---------------- |
-| ✨  | `feat`     | Features                 | A new feature                                                                     | Minor            |
-| 🐛  | `fix`      | Bug Fixes                | A bug fix                                                                         | Patch            |
-| 📚  | `docs`     | Documentation            | Documentation only changes                                                        | Patch            |
-| 💎  | `style`    | Styles                   | Changes that do not affect the meaning of the code (white-space, formatting, etc) | Patch            |
-| 📦  | `refactor` | Code Refactoring         | A code change that neither fixes a bug nor adds a feature                         | Patch            |
-| 🚀  | `perf`     | Performance Improvements | A code change that improves performance                                           | Patch            |
-| 🚨  | `test`     | Tests                    | Adding missing tests or correcting existing tests                                 | Patch            |
-| 🛠   | `build`    | Builds                   | Changes that affect the build system or external dependencies                     | Patch            |
-| ⚙️  | `ci`       | Continuous Integrations  | Changes to our CI configuration files and scripts                                 | Patch            |
-| ♻️  | `chore`    | Chores                   | Other changes that don't modify src or test files                                 | Patch            |
-| 🗑   | `revert`   | Reverts                  | Reverts a previous commit                                                         | Patch            |
+| Prefix | Title | Description | Emoji | Version impact* |
+| --- | --- | --- | --- | --- |
+| `feat` | Features | A new feature | ? | Minor |
+| `fix` | Bug Fixes | A bug fix | ?? | Patch |
+| `docs` | Documentation | Documentation only changes | ?? | Patch |
+| `style` | Styles | Changes that do not affect the meaning of the code (white-space, formatting, etc) | ?? | Patch |
+| `refactor` | Code Refactoring | A code change that neither fixes a bug nor adds a feature | ?? | Patch |
+| `perf` | Performance Improvements | A code change that improves performance | ?? | Patch |
+| `test` | Tests | Adding missing tests or correcting existing tests | ?? | Patch |
+| `build` | Builds | Changes that affect the build system or external dependencies | ?? | Patch |
+| `ci` | Continuous Integrations | Changes to our CI configuration files and scripts | ?? | Patch |
+| `chore` | Chores | Other changes that don't modify src or test files | ?? | Patch |
+| `revert` | Reverts | Reverts a previous commit | ?? | Patch |
 
-\* Append `!` to any type (for example, `feat!`) or include `BREAKING CHANGE:` in the body to signal a **major** version bump.
+* Append `!` to any type (for example, `feat!`) or include `BREAKING CHANGE:` in the body to signal a **major** version bump.
+
+### Testing with Vitest
+
+We rely on [Vitest](https://vitest.dev/) for unit testing. Tests live under the `test/` directory and follow the `*.test.ts` naming convention. To execute the suite locally, run:
+
+```bash
+npm test
+```
+
+Vitest runs in Node environment mode to keep the suite fast and aligned with the SDK's runtime. Helpful flags include:
+
+- `npm run test -- --watch` to rerun tests when files change.
+- `npm run test -- --coverage` to generate coverage reports.
+
+Please add or update tests alongside any code change so the suite remains a reliable guardrail.
 
 #### Passing commit examples
 
@@ -60,3 +75,4 @@ Semantic-release inspects the `type` field of your commit messages to determine 
 - `fix(rate-limiter): prevent token leak on abort`
 - `docs: document commit message flow`
 - `chore!: drop Node 18 support (BREAKING CHANGE: requires Node 20)`
+
