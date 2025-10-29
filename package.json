@@ -1,6 +1,6 @@
 {
   "name": "companycam",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "TypeScript SDK for the CompanyCam API generated from the published OpenAPI specification.",
   "type": "module",
   "main": "dist/index.js",
