@@ -15,6 +15,7 @@ We are excited to have you collaborate on the CompanyCam TypeScript SDK. This do
 3. **Add or update tests** for every behavioral change. New features must ship with accompanying tests that demonstrate the change.
 4. **Generate or update artifacts** from the OpenAPI spec as needed.
 5. **Ensure linting and formatting** match existing standards when they become available in the project.
+6. **Ensure commit messages** are detailed and follow Conventional Commits formatting (see [Commit Message Guidelines from the readme](readme.md#commit-message-guidelines)).
 
 ## Versioning and Changelog Management
 
@@ -27,11 +28,12 @@ We follow [Semantic Versioning](https://semver.org/) and use [semantic-release](
 
 Before requesting a review:
 
-- [ ] Make sure your branch is rebased onto the latest `main`.
-- [ ] Confirm that all generated files stay in sync with `companycam-openapi-spec.yaml`.
-- [ ] Resolve **all** GitHub Copilot review comments if Copilot opens a review on your PR.
-- [ ] Ensure tests and quality checks pass locally.
-- [ ] Ensure your commits follow the Conventional Commits spec so semantic-release can infer the next version.
+- [ ] Make sure your branch is up to date with the latest changes from `main`.
+- [ ] Confirm that all files stay in sync with `companycam-openapi-spec.yaml`.
+- [ ] Resolve **all** GitHub Copilot review comments if Copilot opens a review on your PR, either by marking them as resolved or implementing the changes.
+- [ ] Ensure all tests and quality checks pass.
+- [ ] Use a PR title that follows the Conventional Commits spec so semantic-release can properly infer the next version.
+- [ ] Include a detailed list of changes in your PR description so that semantic-release can properly update the change log.
 
 When the checklist is complete, request a review from **@jmiller-pwi**. A human reviewer will merge once everything looks good.
 
