@@ -12,7 +12,7 @@ We are excited to have you collaborate on the CompanyCam TypeScript SDK. This do
 
 1. **Create a new branch** from `main`.
 2. **Implement your changes** following the guidelines in [`agents.md`](agents.md).
-3. **Add or update tests** when applicable. (Testing scripts will be documented alongside the generated code.)
+3. **Add or update tests** for every behavioral change. New features must ship with accompanying tests that demonstrate the change.
 4. **Generate or update artifacts** from the OpenAPI spec as needed.
 5. **Ensure linting and formatting** match existing standards when they become available in the project.
 
