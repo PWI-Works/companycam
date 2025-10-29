@@ -1,110 +1,94 @@
-Here are the four Codex (or equivalent agent) prompt blocks updated so the agent automatically reads and uses **`companycam-openapi-spec.yaml`** from the repository—no need for you to paste or upload the spec.
-The wording assumes the repo includes both `companycam-openapi-spec.yaml` and `agents.md`.
+# AI Development Planned Steps
+
+The following Codex (or equivalent agent) prompt blocks keep every run aligned with the workflows defined in `agents.md`. Each run must read `companycam-openapi-spec.yaml` directly from the repository and must either write new unit tests or confirm that existing tests still pass (`npm test`).
 
 ---
 
-## 🟩 Run 1 — Types & Manifest
+## Run 1 -- Interfaces
 
-**SYSTEM**
+**SYSTEM**  
 You are a senior TypeScript engineer. Output complete files only; no commentary.
 
-**USER**
-Use the file `companycam-openapi-spec.yaml` from this repository as your only source of truth.
-Generate the following:
+**USER**  
+Use `companycam-openapi-spec.yaml` from this repository as the sole source of truth. Generate:
 
-* `src/types.ts` — TypeScript interfaces and types for all schemas, parameters, and request/response bodies.
-* `src/manifest.json` — normalized operation metadata (`id`, `tag`, `method`, `path`, `params`, `requestBodyType`, `responseType`, `successStatus`, `errorStatuses`, etc.).
+- `src/interfaces.ts` -- exported TypeScript interfaces matching the spec components and the request/response payloads the SDK exposes.
 
 Requirements:
 
-* Resolve `$ref` links; reuse shared schemas.
-* Interfaces → PascalCase; exported.
-* Include `required` flags.
-* Handle `oneOf`, `anyOf`, `allOf`, and `nullable` accurately.
-* Choose the primary 2xx success response; record others as errors.
-* Output only these two files.
+- Resolve `$ref` links and reuse shared schemas.
+- Interfaces only (no standalone type aliases); use PascalCase.
+- Model `oneOf`, `anyOf`, `allOf`, and `nullable` exactly.
+- Include required vs. optional properties.
+- Preserve documentation by emitting concise JSDoc pulled from the spec.
+- After writing files, run or verify `npm test` so unit coverage remains valid.
 
 ---
 
-## 🟩 Run 2 — Core Runtime (axios + axios-retry + Limiter + Errors)
+## Run 2 -- HTTP Runtime (axios + axios-retry + limiter + errors)
 
-**SYSTEM**
+**SYSTEM**  
 You are a senior TypeScript engineer. Output complete files only; no commentary.
 
-**USER**
-Use `companycam-openapi-spec.yaml` for context on rate limits, auth, and error schema.
-Generate:
+**USER**  
+Use `companycam-openapi-spec.yaml` for context on auth, rate limits, and error schemas. Generate or update:
 
-* `src/http/RateLimiter.ts` — token-bucket limiter (≈100 req/min, queue ok)
-* `src/http/Errors.ts` — `APIError`, `APIProblem` types
-* `src/http/HttpClient.ts` — HTTP transport built on `axios` and `axios-retry`
-* `src/index.ts` — exports
+- `src/http/RateLimiter.ts` -- token-bucket limiter (100 requests/minute default) with abort support.
+- `src/http/Errors.ts` -- `APIError`, `APIProblem`, and helpers mirroring the spec's error payload.
+- `src/http/HttpClient.ts` -- axios transport configured with axios-retry, honoring Retry-After, idempotency, and default timeouts.
+- `src/index.ts` -- re-export the HTTP utilities and interfaces.
 
-Rules:
+Guidelines:
 
-* Use `axios` for transport; `axios-retry` for retries.
-* Retry on network / 408 / 429 / 5xx.
-* Exponential backoff with jitter (base 200 ms, cap 8000 ms); honor `Retry-After`.
-* Treat GET/PUT/PATCH/DELETE as idempotent; POST only if configured.
-* Respect per-request timeout (default 30 s).
-* Include idempotency-key header support.
-* No external deps beyond `axios` and `axios-retry`.
-* TypeScript strict mode; ESM output.
+- Retry on network errors plus HTTP 408, 429, and 5xx with exponential backoff (base 200 ms, cap 8000 ms, jitter, Retry-After respected).
+- Treat GET/PUT/PATCH/DELETE as idempotent; only retry POST when explicitly enabled.
+- Keep output ESM-compatible and strict TypeScript.
+- After changes, run or reaffirm `npm test`.
 
 ---
 
-## 🟩 Run 3 — Resources (per Tag)
+## Run 3 -- Resource Client Library
 
-**SYSTEM**
+**SYSTEM**  
 You are a senior TypeScript engineer. Output complete files only; no commentary.
 
-**USER**
-Use `companycam-openapi-spec.yaml`, `src/types.ts`, and `src/manifest.json` as input.
-Generate one resource class per API tag:
+**USER**  
+Using `companycam-openapi-spec.yaml`, the generated `src/interfaces.ts`, and the HTTP runtime utilities:
 
-* `src/resources/<TagName>.ts` (≤ 20 endpoints per file; split if larger).
-* `src/client.ts` — `createClient(options)` that instantiates `HttpClient` and resource instances.
-* Update `src/index.ts` to export `createClient` and resource types.
-
-Each resource method signature:
-
-```ts
-methodName(params: {
-  path?: {...};
-  query?: {...};
-  headers?: {...};
-  body?: <requestBodyType>;
-  idempotencyKey?: string;
-  signal?: AbortSignal;
-}): Promise<ResponseEnvelope<<responseType>>>
-```
-
-Encode path params; derive types directly from the manifest.
-Include concise JSDoc (summary + description + params + return).
-If pagination fields exist (`page`, `per_page`, `cursor`, etc.), add an `async *iterateMethodName()` generator based on spec semantics.
+- Generate resource classes under `src/resources/<Domain>.ts`, grouping endpoints by the business entity they operate on (for example `Users`, `Companies`, `Projects`, `Photos`, `Documents`). Keep related sub-resources together so the resulting API feels natural (e.g., project collaborators, assignees, notes).
+- Method signatures must accept the minimal ergonomic input that maps to the generated interfaces. Prefer referencing existing interface shapes (or composing them) so callers can pass domain objects directly. Optional parameters should remain optional, but the method should support them when needed (for example, optional query filters). Avoid forcing boilerplate wrappers when an interface already represents the necessary data.
+- Implement `src/client.ts` exposing a `createClient(options)` factory that configures `HttpClient`, instantiates each resource, and wires them together.
+- Update `src/index.ts` exports so SDK consumers can import the client factory, resource classes, and interfaces.
+- Ensure path parameters are URL encoded, only documented query/headers are sent, and errors surface through `APIError`.
+- Identify shared logic (for example, pagination helpers, parameter builders, serialization) and extract reusable utilities so method bodies stay slim. Favor intuitive, object-oriented entry points such as `client.projects.assignees.add(...)` or `client.photos.tags.remove(...)` that mirror how customers think about the API.
+- When the resources are generated or updated, run `npm test` to confirm the library remains stable (or document why it could not be executed).
 
 ---
 
-## 🟩 Run 4 — Docs & JSDoc Polish
+## Run 4 -- Documentation & Developer Experience
 
-**SYSTEM**
+**SYSTEM**  
 You are a senior TypeScript engineer. Output complete files only; no commentary.
 
-**USER**
-Use `companycam-openapi-spec.yaml` as context for auth, pagination, and error model.
-Tasks:
+**USER**  
+Using the current repository state and `companycam-openapi-spec.yaml`:
 
-* Add or refine concise JSDoc on all public methods and classes (summary, key params, returns, errors).
-* Generate `README.md` that describes:
-
-  * Purpose (TypeScript SDK for CompanyCam API).
-  * Install/build placeholder (no package.json yet).
-  * Configuration options (`baseUrl`, `auth`, `timeoutMs`, retry knobs, rate limit behavior).
-  * Error handling (`APIError` shape).
-  * Pagination overview (based on spec).
-  * Note that all SDK content is derived from `companycam-openapi-spec.yaml`.
-* Exclude code examples and publishing steps.
+- Refresh README content to describe the SDK purpose, configuration (base URL, auth token, timeout, retry knobs, rate limiting), error handling (`APIError`), pagination behavior defined in the spec, and the guarantee that code is spec-derived.
+- Touch up JSDoc on public classes and methods for clarity (summary, key params, return values, error notes).
+- Ensure contribution docs reference the requirement to add or verify tests (`npm test`) for every change.
+- Confirm the test suite passes before concluding (`npm test`).
 
 ---
 
-Each run will now automatically use the spec file already in the repository and the behavioral rules from `agents.md`; you don’t need to provide the file contents manually.
+## Run 5 -- Validation & Housekeeping
+
+**SYSTEM**  
+You are a senior TypeScript engineer. Output complete files only; no commentary.
+
+**USER**  
+Before handing work back:
+
+- Re-read `agents.md` to confirm compliance (spec-first, no inferred behavior, mandatory test verification).
+- Regenerate any spec-derived artifacts that became stale during earlier runs.
+- Execute `npm test` and address failures; document skipped checks if something blocks the run.
+- Summarize changes succinctly for reviewers, including the testing status.
