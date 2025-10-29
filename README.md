@@ -36,11 +36,23 @@ Refer to the Conventional Commits specification for the allowed prefixes (`feat`
 
 #### Allowed prefixes and release impact
 
-Semantic-release inspects the `type` field to determine how to version the next release:
+Semantic-release inspects the `type` field of your commit messages to determine how to version the next release. Use the table below to choose the appropriate prefix for your commit:
 
-- `feat`: triggers a **minor** version bump.
-- `fix`, `perf`, `refactor`, `docs`, `chore`, `test`, `build`, `ci`, `style`: treated as **patch** updates (no feature bump).
-- Append `!` to any type (for example, `feat!`) or include `BREAKING CHANGE:` in the body to signal a **major** version bump.
+|     | Prefix     | Title                    | Description                                                                       | Version impact\* |
+| --- | ---------- | ------------------------ | --------------------------------------------------------------------------------- | ---------------- |
+| ✨  | `feat`     | Features                 | A new feature                                                                     | Minor            |
+| 🐛  | `fix`      | Bug Fixes                | A bug fix                                                                         | Patch            |
+| 📚  | `docs`     | Documentation            | Documentation only changes                                                        | Patch            |
+| 💎  | `style`    | Styles                   | Changes that do not affect the meaning of the code (white-space, formatting, etc) | Patch            |
+| 📦  | `refactor` | Code Refactoring         | A code change that neither fixes a bug nor adds a feature                         | Patch            |
+| 🚀  | `perf`     | Performance Improvements | A code change that improves performance                                           | Patch            |
+| 🚨  | `test`     | Tests                    | Adding missing tests or correcting existing tests                                 | Patch            |
+| 🛠   | `build`    | Builds                   | Changes that affect the build system or external dependencies                     | Patch            |
+| ⚙️  | `ci`       | Continuous Integrations  | Changes to our CI configuration files and scripts                                 | Patch            |
+| ♻️  | `chore`    | Chores                   | Other changes that don't modify src or test files                                 | Patch            |
+| 🗑   | `revert`   | Reverts                  | Reverts a previous commit                                                         | Patch            |
+
+\* Append `!` to any type (for example, `feat!`) or include `BREAKING CHANGE:` in the body to signal a **major** version bump.
 
 #### Passing commit examples
 
