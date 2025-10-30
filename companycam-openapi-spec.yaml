@@ -1,3 +1,5 @@
+# sourced from https://github.com/CompanyCam/openapi-spec
+
 openapi: 3.0.0
 info:
     version: v2
