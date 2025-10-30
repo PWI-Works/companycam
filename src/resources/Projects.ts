@@ -1,6 +1,8 @@
 import type {
+  Address,
   Checklist,
   Comment,
+  Coordinate,
   Document,
   ListProjectPhotosQueryParams,
   ListProjectsQueryParams,
@@ -8,12 +10,9 @@ import type {
   Photo,
   Project,
   ProjectCollaborator,
-  ProjectCreateInput,
-  ProjectDocumentUpload,
+  ProjectContactRequest,
   ProjectInvitation,
   ProjectNotepad,
-  ProjectPhotoUpload,
-  ProjectUpdateInput,
   Tag,
   User,
 } from "../interfaces.js";
@@ -86,7 +85,13 @@ export class ProjectsResource {
    * @throws {APIError} When the API responds with an error status.
    */
   async create(
-    project: ProjectCreateInput,
+    project: {
+      name?: Project["name"];
+      address?: Address;
+      coordinates?: Coordinate;
+      geofence?: Project["geofence"];
+      primary_contact?: ProjectContactRequest;
+    },
     options?: UserScopedRequestOptions
   ): Promise<Project> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);
@@ -130,7 +135,12 @@ export class ProjectsResource {
    */
   async update(
     projectId: string,
-    updates: ProjectUpdateInput,
+    updates: {
+      name?: Project["name"];
+      address?: Address;
+      coordinates?: Coordinate;
+      geofence?: Project["geofence"];
+    },
     options?: RequestOptions
   ): Promise<Project> {
     const response = await this.http.request<Project>({
@@ -238,7 +248,13 @@ export class ProjectPhotosResource {
    */
   async create(
     projectId: string,
-    photo: ProjectPhotoUpload,
+    photo: {
+      coordinates?: Photo["coordinates"];
+      uri: string;
+      captured_at: number;
+      description?: Photo["description"];
+      tags?: string[];
+    },
     options?: UserScopedRequestOptions
   ): Promise<Photo> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);
@@ -566,7 +582,10 @@ export class ProjectDocumentsResource {
    */
   async create(
     projectId: string,
-    document: ProjectDocumentUpload,
+    document: {
+      name?: Document["name"];
+      attachment?: string;
+    },
     options?: UserScopedRequestOptions
   ): Promise<Document> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);

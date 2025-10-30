@@ -367,55 +367,11 @@ export interface ListChecklistsQueryParams extends PaginationQueryParams {
 }
 
 /**
- * Attributes accepted when creating a user.
- */
-export interface UserCreateInput
-  extends Pick<
-    Partial<User>,
-    "first_name" | "last_name" | "email_address" | "phone_number"
-  > {
-  password?: string;
-  user_role?: string;
-}
-
-/**
- * Attributes accepted when updating a user.
- */
-export interface UserUpdateInput
-  extends Pick<
-    Partial<User>,
-    "first_name" | "last_name" | "email_address" | "phone_number"
-  > {
-  password?: string;
-}
-
-/**
  * Query parameters accepted by the list projects q operation.
  */
 export interface ListProjectsQueryParams extends PaginationQueryParams {
   query?: string;
   modified_since?: string;
-}
-
-/**
- * Attributes accepted when creating a project.
- */
-export interface ProjectCreateInput {
-  name?: Project["name"];
-  address?: Address;
-  coordinates?: Coordinate;
-  geofence?: Coordinate[];
-  primary_contact?: ProjectContactRequest;
-}
-
-/**
- * Attributes accepted when updating a project.
- */
-export interface ProjectUpdateInput {
-  name?: Project["name"];
-  address?: Address;
-  coordinates?: Coordinate;
-  geofence?: Coordinate[];
 }
 
 /**
@@ -430,25 +386,6 @@ export interface ListProjectPhotosQueryParams extends PaginationQueryParams {
 }
 
 /**
- * Shape of the photo payload accepted when uploading a project photo.
- */
-export interface ProjectPhotoUpload {
-  coordinates?: Coordinate;
-  uri: string;
-  captured_at: number;
-  description?: Photo["description"];
-  tags?: string[];
-}
-
-/**
- * Attributes accepted when uploading a project document.
- */
-export interface ProjectDocumentUpload
-  extends Pick<Partial<Document>, "name"> {
-  attachment?: string;
-}
-
-/**
  * Query parameters accepted by the list photos q operation.
  */
 export interface ListPhotosQueryParams extends PaginationQueryParams {
@@ -458,9 +395,3 @@ export interface ListPhotosQueryParams extends PaginationQueryParams {
   group_ids?: Array<number>;
   tag_ids?: Array<number>;
 }
-
-/**
- * Attributes accepted when creating or updating a webhook registration.
- */
-export interface WebhookMutationInput
-  extends Pick<Partial<Webhook>, "url" | "scopes" | "enabled" | "token"> {}

@@ -1,8 +1,4 @@
-import type {
-  PaginationQueryParams,
-  Webhook,
-  WebhookMutationInput,
-} from "../interfaces.js";
+import type { PaginationQueryParams, Webhook } from "../interfaces.js";
 import type { HttpClient } from "../http/HttpClient.js";
 import {
   buildRequestConfig,
@@ -48,7 +44,12 @@ export class WebhooksResource {
    * @throws {APIError} When the API responds with an error status.
    */
   async create(
-    payload: WebhookMutationInput,
+    payload: {
+      url?: Webhook["url"];
+      scopes?: Webhook["scopes"];
+      enabled?: Webhook["enabled"];
+      token?: Webhook["token"];
+    },
     options?: RequestOptions
   ): Promise<Webhook> {
     const response = await this.http.request<Webhook>({
@@ -90,7 +91,12 @@ export class WebhooksResource {
    */
   async update(
     webhookId: string,
-    payload: WebhookMutationInput,
+    payload: {
+      url?: Webhook["url"];
+      scopes?: Webhook["scopes"];
+      enabled?: Webhook["enabled"];
+      token?: Webhook["token"];
+    },
     options?: RequestOptions
   ): Promise<Webhook> {
     const response = await this.http.request<Webhook>({

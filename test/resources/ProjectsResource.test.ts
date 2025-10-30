@@ -4,7 +4,6 @@ import type { HttpClient } from "../../src/http/HttpClient.js";
 import type {
   ListProjectsQueryParams,
   Project,
-  ProjectCreateInput,
   User,
 } from "../../src/interfaces.js";
 import { ProjectsResource } from "../../src/resources/Projects.js";
@@ -60,7 +59,7 @@ describe("ProjectsResource", () => {
 
   it("creates a project with user impersonation headers", async () => {
     // The resource should forward the impersonation header and request payload untouched.
-    const projectInput: ProjectCreateInput = { name: "Garage Remodel" };
+    const projectInput = { name: "Garage Remodel" };
     const project: Project = { id: "456" };
     request.mockResolvedValueOnce(buildResponse(project));
 

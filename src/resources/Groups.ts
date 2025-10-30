@@ -46,9 +46,9 @@ export class GroupsResource {
    * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
    * @returns The newly created {@link Group}.
    * @throws {APIError} When the API responds with an error status.
-   */
+  */
   async create(
-    name?: string,
+    name?: Group["name"],
     userIds?: Array<User["id"]>,
     options?: UserScopedRequestOptions
   ): Promise<Group> {
@@ -101,7 +101,7 @@ export class GroupsResource {
    */
   async update(
     groupId: string,
-    name?: string,
+    name?: Group["name"],
     userIds?: Array<User["id"]>,
     options?: RequestOptions
   ): Promise<Group> {

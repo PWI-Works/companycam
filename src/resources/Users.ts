@@ -1,9 +1,4 @@
-import type {
-  PaginationQueryParams,
-  User,
-  UserCreateInput,
-  UserUpdateInput,
-} from "../interfaces.js";
+import type { PaginationQueryParams, User } from "../interfaces.js";
 import type { HttpClient } from "../http/HttpClient.js";
 import {
   buildRequestConfig,
@@ -68,7 +63,14 @@ export class UsersResource {
    * @throws {APIError} When the API responds with an error status.
    */
   async create(
-    user: UserCreateInput,
+    user: {
+      first_name?: User["first_name"];
+      last_name?: User["last_name"];
+      email_address?: User["email_address"];
+      phone_number?: User["phone_number"];
+      password?: string;
+      user_role?: string;
+    },
     options?: UserScopedRequestOptions
   ): Promise<User> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);
@@ -112,7 +114,13 @@ export class UsersResource {
    */
   async update(
     userId: string,
-    updates: UserUpdateInput,
+    updates: {
+      first_name?: User["first_name"];
+      last_name?: User["last_name"];
+      email_address?: User["email_address"];
+      phone_number?: User["phone_number"];
+      password?: string;
+    },
     options?: UserScopedRequestOptions
   ): Promise<User> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);
