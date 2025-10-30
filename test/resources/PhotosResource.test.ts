@@ -1,11 +1,7 @@
 import type { AxiosResponse } from "axios";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { HttpClient } from "../../src/http/HttpClient.js";
-import type {
-  CreatePhotoTagsRequestBody,
-  Photo,
-  Tag,
-} from "../../src/interfaces.js";
+import type { Photo, Tag } from "../../src/interfaces.js";
 import { PhotosResource } from "../../src/resources/Photos.js";
 
 // A concise helper mirroring the Axios response signature expected by the HttpClient.
@@ -32,11 +28,11 @@ describe("PhotosResource", () => {
 
   it("creates photo tags via the spec-aligned helper", async () => {
     // The helper should issue a POST to the tags endpoint while preserving the payload.
-    const body: CreatePhotoTagsRequestBody = { tags: ["before", "after"] };
+    const tags = ["before", "after"];
     const tag: Tag = { id: "t-1" };
     request.mockResolvedValueOnce(buildResponse(tag));
 
-    const result = await resource.tags.create("photo id", body, {
+    const result = await resource.tags.create("photo id", tags, {
       authToken: "override-token",
     });
 
@@ -47,7 +43,7 @@ describe("PhotosResource", () => {
       method: "POST",
       url: "/photos/photo%20id/tags",
       authToken: "override-token",
-      data: body,
+      data: { tags },
     });
   });
 
@@ -57,7 +53,7 @@ describe("PhotosResource", () => {
     const tag: Tag = { id: "t-2" };
     request.mockResolvedValueOnce(buildResponse(tag));
 
-    const result = await resource.tags.add(photo.id, { tags: ["demo"] });
+    const result = await resource.tags.create(photo.id, ["demo"]);
 
     expect(result).toEqual(tag);
     expect(request).toHaveBeenCalledTimes(1);

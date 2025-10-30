@@ -2,9 +2,9 @@ import type { AxiosResponse } from "axios";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { HttpClient } from "../../src/http/HttpClient.js";
 import type {
-  CreateProjectRequestBody,
   ListProjectsQueryParams,
   Project,
+  ProjectCreateInput,
   User,
 } from "../../src/interfaces.js";
 import { ProjectsResource } from "../../src/resources/Projects.js";
@@ -60,11 +60,11 @@ describe("ProjectsResource", () => {
 
   it("creates a project with user impersonation headers", async () => {
     // The resource should forward the impersonation header and request payload untouched.
-    const body: CreateProjectRequestBody = { name: "Garage Remodel" };
+    const projectInput: ProjectCreateInput = { name: "Garage Remodel" };
     const project: Project = { id: "456" };
     request.mockResolvedValueOnce(buildResponse(project));
 
-    const result = await resource.create(body, {
+    const result = await resource.create(projectInput, {
       authToken: "scoped-token",
       "X-CompanyCam-User": "crew.lead@example.com",
     });
@@ -76,7 +76,7 @@ describe("ProjectsResource", () => {
       url: "/projects",
       authToken: "scoped-token",
       headers: { "X-CompanyCam-User": "crew.lead@example.com" },
-      data: body,
+      data: projectInput,
     });
   });
 

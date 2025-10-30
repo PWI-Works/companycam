@@ -1,9 +1,4 @@
-import type {
-  CreateTagRequestBody,
-  PaginationQueryParams,
-  Tag,
-  UpdateTagRequestBody,
-} from "../interfaces.js";
+import type { PaginationQueryParams, Tag } from "../interfaces.js";
 import type { HttpClient } from "../http/HttpClient.js";
 import {
   buildRequestConfig,
@@ -43,17 +38,17 @@ export class TagsResource {
   /**
    * Create a new tag.
    *
-   * @param body Payload describing the tag to create.
+   * @param displayValue Human-readable tag label as described in the spec.
    * @param options Optional request overrides such as alternate auth token or abort signal.
    * @returns The created {@link Tag}.
    * @throws {APIError} When the API responds with an error status.
    */
-  async create(body: CreateTagRequestBody, options?: RequestOptions): Promise<Tag> {
+  async create(displayValue: string, options?: RequestOptions): Promise<Tag> {
     const response = await this.http.request<Tag>({
       ...buildRequestConfig(options),
       method: "POST",
       url: "/tags",
-      data: body,
+      data: { tag: { display_value: displayValue } },
     });
 
     return response.data;
@@ -81,21 +76,21 @@ export class TagsResource {
    * Update an existing tag.
    *
    * @param tagId Identifier of the tag to update.
-   * @param body Payload describing the new tag attributes.
+   * @param displayValue New human-readable label defined by the spec.
    * @param options Optional request overrides such as alternate auth token or abort signal.
    * @returns The updated {@link Tag}.
    * @throws {APIError} When the API responds with an error status.
    */
   async update(
     tagId: string,
-    body: UpdateTagRequestBody,
+    displayValue: string,
     options?: RequestOptions
   ): Promise<Tag> {
     const response = await this.http.request<Tag>({
       ...buildRequestConfig(options),
       method: "PUT",
       url: `/tags/${encodePathParam(tagId)}`,
-      data: body,
+      data: { tag: { display_value: displayValue } },
     });
 
     return response.data;

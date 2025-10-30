@@ -367,27 +367,25 @@ export interface ListChecklistsQueryParams extends PaginationQueryParams {
 }
 
 /**
- * Request body payload for the create user operation.
+ * Attributes accepted when creating a user.
  */
-export interface CreateUserRequestBody {
-  user?: {
-    first_name?: string;
-    last_name?: string;
-    email_address?: string;
-    phone_number?: string;
-    password?: string;
-    user_role?: string;
-  };
+export interface UserCreateInput
+  extends Pick<
+    Partial<User>,
+    "first_name" | "last_name" | "email_address" | "phone_number"
+  > {
+  password?: string;
+  user_role?: string;
 }
 
 /**
- * Request body payload for the update user operation.
+ * Attributes accepted when updating a user.
  */
-export interface UpdateUserRequestBody {
-  first_name?: string;
-  last_name?: string;
-  email_address?: string;
-  phone_number?: string;
+export interface UserUpdateInput
+  extends Pick<
+    Partial<User>,
+    "first_name" | "last_name" | "email_address" | "phone_number"
+  > {
   password?: string;
 }
 
@@ -400,24 +398,24 @@ export interface ListProjectsQueryParams extends PaginationQueryParams {
 }
 
 /**
- * Request body payload for the create project operation.
+ * Attributes accepted when creating a project.
  */
-export interface CreateProjectRequestBody {
-  name?: string;
+export interface ProjectCreateInput {
+  name?: Project["name"];
   address?: Address;
   coordinates?: Coordinate;
-  geofence?: Array<Coordinate>;
+  geofence?: Coordinate[];
   primary_contact?: ProjectContactRequest;
 }
 
 /**
- * Request body payload for the update project operation.
+ * Attributes accepted when updating a project.
  */
-export interface UpdateProjectRequestBody {
-  name?: string;
+export interface ProjectUpdateInput {
+  name?: Project["name"];
   address?: Address;
   coordinates?: Coordinate;
-  geofence?: Array<Coordinate>;
+  geofence?: Coordinate[];
 }
 
 /**
@@ -432,58 +430,22 @@ export interface ListProjectPhotosQueryParams extends PaginationQueryParams {
 }
 
 /**
- * Request body payload for the create project photo operation.
+ * Shape of the photo payload accepted when uploading a project photo.
  */
-export interface CreateProjectPhotoRequestBody {
-  photo: {
-    coordinates?: Coordinate;
-    uri: string;
-    captured_at: number;
-    description?: string;
-    tags?: Array<string>;
-  };
+export interface ProjectPhotoUpload {
+  coordinates?: Coordinate;
+  uri: string;
+  captured_at: number;
+  description?: Photo["description"];
+  tags?: string[];
 }
 
 /**
- * Request body payload for the update project notepad operation.
+ * Attributes accepted when uploading a project document.
  */
-export interface UpdateProjectNotepadRequestBody {
-  notepad: string;
-}
-
-/**
- * Request body payload for the create project labels operation.
- */
-export interface CreateProjectLabelsRequestBody {
-  project?: {
-    labels?: Array<string>;
-  };
-}
-
-/**
- * Request body payload for the create project document operation.
- */
-export interface CreateProjectDocumentRequestBody {
-  document?: {
-    name?: string;
-    attachment?: string;
-  };
-}
-
-/**
- * Request body payload for the create project comment operation.
- */
-export interface CreateProjectCommentRequestBody {
-  comment?: {
-    content?: string;
-  };
-}
-
-/**
- * Request body payload for the create project checklist operation.
- */
-export interface CreateProjectChecklistRequestBody {
-  checklist_template_id?: string;
+export interface ProjectDocumentUpload
+  extends Pick<Partial<Document>, "name"> {
+  attachment?: string;
 }
 
 /**
@@ -498,91 +460,7 @@ export interface ListPhotosQueryParams extends PaginationQueryParams {
 }
 
 /**
- * Request body payload for the update photo operation.
+ * Attributes accepted when creating or updating a webhook registration.
  */
-export interface UpdatePhotoRequestBody {
-  photo?: {
-    internal?: boolean;
-  };
-}
-
-/**
- * Request body payload for the create photo tags operation.
- */
-export interface CreatePhotoTagsRequestBody {
-  tags?: Array<string>;
-}
-
-/**
- * Request body payload for the create photo comment operation.
- */
-export interface CreatePhotoCommentRequestBody {
-  comment?: {
-    content?: string;
-  };
-}
-
-/**
- * Request body payload for the update photo description operation.
- */
-export interface UpdatePhotoDescriptionRequestBody {
-  description?: string;
-}
-
-/**
- * Request body payload for the create tag operation.
- */
-export interface CreateTagRequestBody {
-  tag?: {
-    display_value?: string;
-  };
-}
-
-/**
- * Request body payload for the update tag operation.
- */
-export interface UpdateTagRequestBody {
-  tag?: {
-    display_value?: string;
-  };
-}
-
-/**
- * Request body payload for the create group operation.
- */
-export interface CreateGroupRequestBody {
-  group?: {
-    name?: string;
-    users?: Array<string>;
-  };
-}
-
-/**
- * Request body payload for the update group operation.
- */
-export interface UpdateGroupRequestBody {
-  group?: {
-    name?: string;
-    users?: Array<string>;
-  };
-}
-
-/**
- * Request body payload for the create webhook operation.
- */
-export interface CreateWebhookRequestBody {
-  url?: string;
-  scopes?: Array<string>;
-  enabled?: boolean;
-  token?: string;
-}
-
-/**
- * Request body payload for the update webhook operation.
- */
-export interface UpdateWebhookRequestBody {
-  url?: string;
-  scopes?: Array<string>;
-  enabled?: boolean;
-  token?: string;
-}
+export interface WebhookMutationInput
+  extends Pick<Partial<Webhook>, "url" | "scopes" | "enabled" | "token"> {}

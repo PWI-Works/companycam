@@ -1,9 +1,4 @@
-import type {
-  CreateGroupRequestBody,
-  Group,
-  PaginationQueryParams,
-  UpdateGroupRequestBody,
-} from "../interfaces.js";
+import type { Group, PaginationQueryParams, User } from "../interfaces.js";
 import type { HttpClient } from "../http/HttpClient.js";
 import {
   buildRequestConfig,
@@ -46,22 +41,31 @@ export class GroupsResource {
   /**
    * Create a new group.
    *
-   * @param body Payload following the spec-defined structure for group creation.
+   * @param name Optional name to assign to the group per the spec.
+   * @param userIds Optional list of user identifiers to include, matching the spec schema.
    * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
    * @returns The newly created {@link Group}.
    * @throws {APIError} When the API responds with an error status.
    */
   async create(
-    body: CreateGroupRequestBody,
+    name?: string,
+    userIds?: Array<User["id"]>,
     options?: UserScopedRequestOptions
   ): Promise<Group> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);
+    const groupPayload =
+      name !== undefined || userIds !== undefined
+        ? {
+            ...(name !== undefined ? { name } : {}),
+            ...(userIds !== undefined ? { users: userIds } : {}),
+          }
+        : {};
     const response = await this.http.request<Group>({
       ...buildRequestConfig(requestOptions),
       method: "POST",
       url: "/groups",
       headers: userContext ? { "X-CompanyCam-User": userContext } : undefined,
-      data: body,
+      data: { group: groupPayload },
     });
 
     return response.data;
@@ -89,21 +93,30 @@ export class GroupsResource {
    * Update an existing group.
    *
    * @param groupId Identifier of the group to update.
-   * @param body Patch payload that follows the spec-defined structure.
+   * @param name Optional name to assign to the group per the spec.
+   * @param userIds Optional list of user identifiers to include, matching the spec schema.
    * @param options Optional request overrides such as alternate auth token or abort signal.
    * @returns The updated {@link Group}.
    * @throws {APIError} When the API responds with an error status.
    */
   async update(
     groupId: string,
-    body: UpdateGroupRequestBody,
+    name?: string,
+    userIds?: Array<User["id"]>,
     options?: RequestOptions
   ): Promise<Group> {
+    const groupPayload =
+      name !== undefined || userIds !== undefined
+        ? {
+            ...(name !== undefined ? { name } : {}),
+            ...(userIds !== undefined ? { users: userIds } : {}),
+          }
+        : {};
     const response = await this.http.request<Group>({
       ...buildRequestConfig(options),
       method: "PUT",
       url: `/groups/${encodePathParam(groupId)}`,
-      data: body,
+      data: { group: groupPayload },
     });
 
     return response.data;
