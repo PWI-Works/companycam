@@ -10,10 +10,7 @@ import type {
 import { ProjectsResource } from "../../src/resources/Projects.js";
 
 // A strongly typed Vitest mock representing the HttpClient#request method.
-type RequestMock = ReturnType<typeof vi.fn<
-  [parameters: Parameters<HttpClient["request"]>[0]],
-  ReturnType<HttpClient["request"]>
->>;
+type RequestMock = ReturnType<typeof vi.fn>;
 
 // Local helper for constructing Axios-like responses with minimal boilerplate.
 function buildResponse<T>(data: T): AxiosResponse<T> {
@@ -21,8 +18,8 @@ function buildResponse<T>(data: T): AxiosResponse<T> {
     data,
     status: 200,
     statusText: "OK",
-    headers: {},
-    config: {},
+    headers: {} as any,
+    config: { headers: {} as any },
   };
 }
 
@@ -101,7 +98,7 @@ describe("ProjectsResource", () => {
 
   it("encodes nested identifiers for assignee management", async () => {
     // Sub-resources must reuse the shared HttpClient while encoding every path segment.
-    const user: User = { id: 42 };
+    const user: User = { id: "42" };
     request.mockResolvedValueOnce(buildResponse(user));
 
     const result = await resource.assignees.assign(
