@@ -11,6 +11,9 @@ export interface AbortSignalLike {
   onabort?: AbortHandler | null;
 }
 
+/**
+ * Options controlling the shared token bucket limiter.
+ */
 export interface RateLimiterOptions {
   /**
    * Maximum number of tokens that can be consumed within a full interval.
@@ -31,6 +34,7 @@ interface PendingRequest {
 
 /**
  * Basic token-bucket rate limiter with FIFO queuing and optional abort support.
+ * Defaults enforce the 100 requests per minute guidance required by the SDK.
  */
 export class RateLimiter {
   private readonly tokensPerInterval: number;
@@ -40,6 +44,11 @@ export class RateLimiter {
   private readonly queue: PendingRequest[] = [];
   private refillHandle: ReturnType<typeof setInterval>;
 
+  /**
+   * Create a token bucket limiter.
+   *
+   * @param options Override the bucket size or interval duration.
+   */
   constructor(options: RateLimiterOptions = {}) {
     this.tokensPerInterval = Math.max(1, options.tokensPerInterval ?? 100);
     this.intervalMs = Math.max(1, options.intervalMs ?? 60_000);
@@ -53,6 +62,10 @@ export class RateLimiter {
   /**
    * Acquire a single token before proceeding.
    * The returned promise resolves when a token is allocated.
+   *
+   * @param signal Optional abort signal used to cancel the wait.
+   * @returns Promise that resolves once a token is granted.
+   * @throws {Error} Rejects with an `AbortError` if the signal aborts before a token is available.
    */
   acquire(signal?: AbortSignalLike): Promise<void> {
     if (signal?.aborted) {
@@ -89,6 +102,8 @@ export class RateLimiter {
 
   /**
    * Stop the internal refill timer and clear queued waiters.
+   *
+   * Rejects all pending acquirers with a disposal error so callers can release resources gracefully.
    */
   dispose(): void {
     clearInterval(this.refillHandle);

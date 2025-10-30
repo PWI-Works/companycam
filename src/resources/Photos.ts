@@ -20,7 +20,8 @@ import {
 } from "./utils.js";
 
 /**
- * Resource for working with photos and their nested relationships.
+ * Resource for working with photos and their nested relationships. Provides access to nested
+ * helpers for tags, comments, and descriptions.
  */
 export class PhotosResource {
   readonly tags: PhotoTagsResource;
@@ -35,6 +36,11 @@ export class PhotosResource {
 
   /**
    * List photos with optional filtering parameters.
+   *
+   * @param query Pagination and filtering parameters mirrored from the spec.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Array of {@link Photo} records.
+   * @throws {APIError} When the API responds with an error status.
    */
   async list(
     query?: ListPhotosQueryParams,
@@ -52,6 +58,11 @@ export class PhotosResource {
 
   /**
    * Retrieve a single photo by identifier.
+   *
+   * @param photoId Identifier of the photo to fetch.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The requested {@link Photo}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async retrieve(photoId: string, options?: RequestOptions): Promise<Photo> {
     const response = await this.http.request<Photo>({
@@ -65,6 +76,12 @@ export class PhotosResource {
 
   /**
    * Update a photo, typically toggling the internal flag.
+   *
+   * @param photoId Identifier of the photo to update.
+   * @param body Patch payload that follows the spec-defined structure.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The updated {@link Photo}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async update(
     photoId: string,
@@ -83,6 +100,11 @@ export class PhotosResource {
 
   /**
    * Delete a photo.
+   *
+   * @param photoId Identifier of the photo to delete.
+   * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
+   * @returns Resolves to void when deletion succeeds.
+   * @throws {APIError} When the API responds with an error status.
    */
   async delete(
     photoId: string,
@@ -106,6 +128,11 @@ export class PhotoTagsResource {
 
   /**
    * List tags assigned to the specified photo.
+   *
+   * @param photoId Identifier of the photo whose tags should be retrieved.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Array of {@link Tag} records.
+   * @throws {APIError} When the API responds with an error status.
    */
   async list(photoId: string, options?: RequestOptions): Promise<Tag[]> {
     const response = await this.http.request<Tag[]>({
@@ -119,6 +146,12 @@ export class PhotoTagsResource {
 
   /**
    * Add tags to the photo.
+   *
+   * @param photoId Identifier of the target photo.
+   * @param body Payload describing the tags to create or assign.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The created tag association payload returned by the API.
+   * @throws {APIError} When the API responds with an error status.
    */
   async add(
     photoId: string,
@@ -144,6 +177,12 @@ export class PhotoCommentsResource {
 
   /**
    * List comments attached to the specified photo.
+   *
+   * @param photoId Identifier of the photo to inspect.
+   * @param query Optional pagination controls (`page`, `per_page`).
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Array of {@link Comment} records.
+   * @throws {APIError} When the API responds with an error status.
    */
   async list(
     photoId: string,
@@ -162,6 +201,12 @@ export class PhotoCommentsResource {
 
   /**
    * Create a comment on the photo.
+   *
+   * @param photoId Identifier of the photo to comment on.
+   * @param body Payload describing the comment text to create.
+   * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
+   * @returns The created {@link Comment}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async create(
     photoId: string,
@@ -189,6 +234,12 @@ export class PhotoDescriptionsResource {
 
   /**
    * Update the description of a photo.
+   *
+   * @param photoId Identifier of the photo to update.
+   * @param body Payload providing the new description text.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The updated {@link Photo}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async update(
     photoId: string,

@@ -21,6 +21,10 @@ export class ChecklistTemplatesResource {
 
   /**
    * List available checklist templates.
+   *
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Array of {@link ChecklistTemplate} definitions.
+   * @throws {APIError} When the API responds with an error status.
    */
   async list(options?: RequestOptions): Promise<ChecklistTemplate[]> {
     const response = await this.http.request<ChecklistTemplate[]>({

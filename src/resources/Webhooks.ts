@@ -20,6 +20,11 @@ export class WebhooksResource {
 
   /**
    * List registered webhooks.
+   *
+   * @param query Optional pagination controls (`page`, `per_page`).
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Array of {@link Webhook} registrations.
+   * @throws {APIError} When the API responds with an error status.
    */
   async list(
     query?: PaginationQueryParams,
@@ -37,6 +42,11 @@ export class WebhooksResource {
 
   /**
    * Create a webhook subscription.
+   *
+   * @param body Payload describing the webhook to create.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The created {@link Webhook}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async create(
     body: CreateWebhookRequestBody,
@@ -54,6 +64,11 @@ export class WebhooksResource {
 
   /**
    * Retrieve a webhook by identifier.
+   *
+   * @param webhookId Identifier of the webhook to fetch.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The requested {@link Webhook}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async retrieve(webhookId: string, options?: RequestOptions): Promise<Webhook> {
     const response = await this.http.request<Webhook>({
@@ -67,6 +82,12 @@ export class WebhooksResource {
 
   /**
    * Update a webhook registration.
+   *
+   * @param webhookId Identifier of the webhook to update.
+   * @param body Payload describing the updated webhook configuration.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The updated {@link Webhook}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async update(
     webhookId: string,
@@ -85,6 +106,11 @@ export class WebhooksResource {
 
   /**
    * Delete a webhook registration.
+   *
+   * @param webhookId Identifier of the webhook to delete.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Resolves to void when deletion succeeds.
+   * @throws {APIError} When the API responds with an error status.
    */
   async delete(webhookId: string, options?: RequestOptions): Promise<void> {
     await this.http.request<void>({

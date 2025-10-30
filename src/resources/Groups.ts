@@ -15,13 +15,19 @@ import {
 } from "./utils.js";
 
 /**
- * Resource for managing user groups.
+ * Resource for managing user groups. Offers helpers for listing, creating, updating,
+ * and deleting company-level groups via the generated HTTP client.
  */
 export class GroupsResource {
   constructor(private readonly http: HttpClient) {}
 
   /**
    * List groups defined within the company.
+   *
+   * @param query Optional pagination controls (`page`, `per_page`) from the spec.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Array of {@link Group} records.
+   * @throws {APIError} When the API responds with an error status.
    */
   async list(
     query?: PaginationQueryParams,
@@ -39,6 +45,11 @@ export class GroupsResource {
 
   /**
    * Create a new group.
+   *
+   * @param body Payload following the spec-defined structure for group creation.
+   * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
+   * @returns The newly created {@link Group}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async create(
     body: CreateGroupRequestBody,
@@ -58,6 +69,11 @@ export class GroupsResource {
 
   /**
    * Retrieve a specific group by identifier.
+   *
+   * @param groupId Identifier of the group to fetch.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The requested {@link Group}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async retrieve(groupId: string, options?: RequestOptions): Promise<Group> {
     const response = await this.http.request<Group>({
@@ -71,6 +87,12 @@ export class GroupsResource {
 
   /**
    * Update an existing group.
+   *
+   * @param groupId Identifier of the group to update.
+   * @param body Patch payload that follows the spec-defined structure.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The updated {@link Group}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async update(
     groupId: string,
@@ -89,6 +111,11 @@ export class GroupsResource {
 
   /**
    * Delete a group.
+   *
+   * @param groupId Identifier of the group to delete.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Resolves to void when deletion succeeds.
+   * @throws {APIError} When the API responds with an error status.
    */
   async delete(groupId: string, options?: RequestOptions): Promise<void> {
     await this.http.request<void>({
