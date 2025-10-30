@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/PWI-Works/companycam/compare/v1.0.3...v1.1.0) (2025-10-30)
+
+
+### Features
+
+* finalize client side features ([cdd3fbb](https://github.com/PWI-Works/companycam/commit/cdd3fbb2f3f68d7c0ad2063281addb96c0aa0525))
+
 ## [1.0.3](https://github.com/PWI-Works/companycam/compare/v1.0.2...v1.0.3) (2025-10-28)
 
 
