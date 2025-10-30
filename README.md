@@ -14,6 +14,8 @@ This repository publishes the TypeScript SDK straight from the authoritative `co
 
 ## Installation
 
+This repository is publihed to npm as [companycam](https://www.npmjs.com/package/companycam).
+
 ```sh
 npm install companycam
 ```
