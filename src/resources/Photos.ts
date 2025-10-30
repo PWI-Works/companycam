@@ -145,7 +145,7 @@ export class PhotoTagsResource {
   }
 
   /**
-   * Add tags to the photo.
+   * Create or assign tags to the photo using the spec-defined endpoint.
    *
    * @param photoId Identifier of the target photo.
    * @param body Payload describing the tags to create or assign.
@@ -153,7 +153,7 @@ export class PhotoTagsResource {
    * @returns The created tag association payload returned by the API.
    * @throws {APIError} When the API responds with an error status.
    */
-  async add(
+  async create(
     photoId: string,
     body: CreatePhotoTagsRequestBody,
     options?: RequestOptions
