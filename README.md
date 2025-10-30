@@ -1,8 +1,7 @@
 # CompanyCam TypeScript SDK
 
-[![npm version](https://img.shields.io/npm/v/companycam?color=orange&label=npm)](https://www.npmjs.com/package/companycam) 
+[![npm version](https://img.shields.io/npm/v/companycam?color=orange&label=npm)](https://www.npmjs.com/package/companycam)
 [![Changelog](https://img.shields.io/badge/Changelog-View-blue)](./CHANGELOG.md)
-
 
 Welcome to the home of the unofficial [CompanyCam](https://companycam.com/) TypeScript SDK. This project turns the public OpenAPI specification into a modern, well-typed client that developers can rely on when integrating with the [CompanyCam API](https://docs.companycam.com/docs/welcome). We are glad you are here and would love your help shaping a dependable, community-driven toolkit.
 
@@ -42,15 +41,15 @@ console.log(projects.length);
 
 `createClient` accepts `ClientOptions`, which mirror the exported `HttpClientConfig`. Key options include:
 
-| Option | Default | Description |
-| --- | --- | --- |
-| `baseURL` | _(required)_ | Set this to the server defined by the spec: `https://api.companycam.com/v2`. |
-| `authToken` | _(none)_ | Bearer token required by the `BearerAuth` security scheme declared in the spec. |
-| `timeoutMs` | `30000` | Per-request timeout in milliseconds. Override to align with your infrastructure. |
-| `defaultHeaders` | `{ Accept: "application/json" }` | Additional headers applied to every request. |
-| `axiosOptions` | `{}` | Low-level axios configuration overrides. |
-| `retry` | `{ retries: 3, allowPostRetry: false }` | Configure automatic retries for network errors, HTTP 408, 429, and 5xx responses. Retries use exponential backoff with a 200 ms base delay, 8 s cap, 20% jitter, and honor `Retry-After` when provided. POST requests are only retried when `allowPostRetry` is `true`. |
-| `rateLimiter` | `new RateLimiter({ tokensPerInterval: 100, intervalMs: 60000 })` | Shared token-bucket limiter that enforces the documented 100 requests per minute throughput. Pass `null` to disable or provide your own limiter instance. |
+| Option           | Default                                                          | Description                                                                                                                                                                                                                                                             |
+| ---------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `baseURL`        | _(required)_                                                     | Set this to the server defined by the spec: `https://api.companycam.com/v2`.                                                                                                                                                                                            |
+| `authToken`      | _(none)_                                                         | Bearer token required by the `BearerAuth` security scheme declared in the spec.                                                                                                                                                                                         |
+| `timeoutMs`      | `30000`                                                          | Per-request timeout in milliseconds. Override to align with your infrastructure.                                                                                                                                                                                        |
+| `defaultHeaders` | `{ Accept: "application/json" }`                                 | Additional headers applied to every request.                                                                                                                                                                                                                            |
+| `axiosOptions`   | `{}`                                                             | Low-level axios configuration overrides.                                                                                                                                                                                                                                |
+| `retry`          | `{ retries: 3, allowPostRetry: false }`                          | Configure automatic retries for network errors, HTTP 408, 429, and 5xx responses. Retries use exponential backoff with a 200 ms base delay, 8 s cap, 20% jitter, and honor `Retry-After` when provided. POST requests are only retried when `allowPostRetry` is `true`. |
+| `rateLimiter`    | `new RateLimiter({ tokensPerInterval: 100, intervalMs: 60000 })` | Shared token-bucket limiter that enforces the documented 100 requests per minute throughput. Pass `null` to disable or provide your own limiter instance.                                                                                                               |
 
 Every resource method also accepts optional `RequestOptions` that let you override the bearer token, attach an `AbortSignal`, supply an `Idempotency-Key`, or opt out of rate limiting on a per-call basis. Endpoints that support acting on behalf of another user additionally accept an `X-CompanyCam-User` value via `UserScopedRequestOptions`.
 
@@ -71,7 +70,9 @@ You can catch `APIError` to branch on status, surface structured messages, or re
 
 Every list endpoint in the specification inherits `PaginationQueryParams`, exposing `page` and `per_page` query parameters. Responses return plain arrays; continue pagination by incrementing `page` until the API returns fewer items than requested. Because the spec does not define cursor fields or pagination metadata, the SDK does not infer any additional pagination helpers beyond these query parameters.
 
-## Spec-Derived Guarantee
+## Spec-Driven Promise
+
+We do everything we can to implement the entire [OpenAPI spec made public by CompanyCam](https://github.com/CompanyCam/openapi-spec).
 
 - The OpenAPI document `companycam-openapi-spec.yaml` is the single source of truth.
 - Generated interfaces in `src/interfaces.ts` and every resource method are rebuilt from the spec on each run.
