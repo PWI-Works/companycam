@@ -1,5 +1,9 @@
 # CompanyCam TypeScript SDK
 
+[![npm version](https://img.shields.io/npm/v/companycam?color=orange&label=npm)](https://www.npmjs.com/package/companycam) 
+[![Changelog](https://img.shields.io/badge/Changelog-View-blue)](./CHANGELOG.md)
+
+
 Welcome to the home of the unofficial [CompanyCam](https://companycam.com/) TypeScript SDK. This project turns the public OpenAPI specification into a modern, well-typed client that developers can rely on when integrating with the [CompanyCam API](https://docs.companycam.com/docs/welcome). We are glad you are here and would love your help shaping a dependable, community-driven toolkit.
 
 Our focus is to provide:
