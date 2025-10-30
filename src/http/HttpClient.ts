@@ -9,6 +9,9 @@ import type { AxiosError } from "axios";
 import { RateLimiter } from "./RateLimiter.js";
 import { APIError } from "./Errors.js";
 
+/**
+ * Controls automatic retry behavior applied to outgoing requests.
+ */
 export interface RetryOptions {
   /**
    * Maximum retry attempts. Defaults to 3.
@@ -28,6 +31,10 @@ export interface RetryOptions {
   ) => void;
 }
 
+/**
+ * Configuration accepted by {@link HttpClient}. These options align with the runtime guarantees
+ * described in the SDK README (base URL, bearer token, timeout, retries, and rate limiting).
+ */
 export interface HttpClientConfig {
   baseURL?: string;
   timeoutMs?: number;
@@ -38,6 +45,9 @@ export interface HttpClientConfig {
   rateLimiter?: RateLimiter | null;
 }
 
+/**
+ * Per-request overrides that extend the underlying axios request configuration.
+ */
 export interface HttpRequestOptions<T = unknown> extends AxiosRequestConfig<T> {
   /**
    * Override the bearer token for this request.
@@ -57,6 +67,10 @@ const IDEMPOTENT_METHODS = new Set(["GET", "PUT", "PATCH", "DELETE"]);
 const BASE_DELAY_MS = 200;
 const MAX_DELAY_MS = 8_000;
 
+/**
+ * HTTP abstraction that layers CompanyCam specific defaults - timeouts, retries, rate limiting,
+ * and bearer authentication - on top of axios.
+ */
 export class HttpClient {
   private readonly axiosInstance: AxiosInstance;
   private readonly rateLimiter: RateLimiter | null;
@@ -65,6 +79,11 @@ export class HttpClient {
   private readonly allowPostRetry: boolean;
   private readonly authToken?: string;
 
+  /**
+   * Create a new HTTP client instance.
+   *
+   * @param config Optional overrides for base URL, timeout, bearer token, retry policy, and rate limiter.
+   */
   constructor(config: HttpClientConfig = {}) {
     this.authToken = config.authToken;
 
@@ -112,6 +131,14 @@ export class HttpClient {
     }
   }
 
+  /**
+   * Perform an HTTP request with the configured defaults and return the raw axios response.
+   *
+   * @param options Axios request configuration along with SDK-specific overrides such as
+   * bearer token overrides, idempotency keys, and rate-limiter hints.
+   * @returns The axios response object containing the typed payload.
+   * @throws {APIError} When the underlying request fails with a non-success status code.
+   */
   async request<T = unknown, D = unknown>(
     options: HttpRequestOptions<D>
   ): Promise<AxiosResponse<T>> {

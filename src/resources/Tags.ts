@@ -20,6 +20,11 @@ export class TagsResource {
 
   /**
    * List tags configured for the company.
+   *
+   * @param query Optional pagination controls (`page`, `per_page`).
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Array of {@link Tag} records.
+   * @throws {APIError} When the API responds with an error status.
    */
   async list(
     query?: PaginationQueryParams,
@@ -37,6 +42,11 @@ export class TagsResource {
 
   /**
    * Create a new tag.
+   *
+   * @param body Payload describing the tag to create.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The created {@link Tag}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async create(body: CreateTagRequestBody, options?: RequestOptions): Promise<Tag> {
     const response = await this.http.request<Tag>({
@@ -51,6 +61,11 @@ export class TagsResource {
 
   /**
    * Retrieve a tag by identifier.
+   *
+   * @param tagId Identifier of the tag to fetch.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The requested {@link Tag}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async retrieve(tagId: string, options?: RequestOptions): Promise<Tag> {
     const response = await this.http.request<Tag>({
@@ -64,6 +79,12 @@ export class TagsResource {
 
   /**
    * Update an existing tag.
+   *
+   * @param tagId Identifier of the tag to update.
+   * @param body Payload describing the new tag attributes.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The updated {@link Tag}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async update(
     tagId: string,
@@ -82,6 +103,11 @@ export class TagsResource {
 
   /**
    * Delete a tag.
+   *
+   * @param tagId Identifier of the tag to delete.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Resolves to void when deletion succeeds.
+   * @throws {APIError} When the API responds with an error status.
    */
   async delete(tagId: string, options?: RequestOptions): Promise<void> {
     await this.http.request<void>({

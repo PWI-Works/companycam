@@ -23,6 +23,10 @@ export interface APIErrorOptions {
   cause?: unknown;
 }
 
+/**
+ * Rich error type thrown whenever the CompanyCam API responds with a non-success status.
+ * Mirrors the problem document defined by the OpenAPI specification and carries request metadata.
+ */
 export class APIError extends Error {
   readonly status?: number;
   readonly code?: string;
@@ -50,6 +54,13 @@ export class APIError extends Error {
     }
   }
 
+  /**
+   * Convert an {@link AxiosError} instance into an {@link APIError}, preserving request metadata
+   * and the spec-defined problem payload when available.
+   *
+   * @param error Axios error raised by the underlying HTTP client.
+   * @returns Structured {@link APIError} ready to surface to SDK consumers.
+   */
   static fromAxios(error: AxiosError): APIError {
     const response = error.response;
     const request = error.config;

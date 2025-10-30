@@ -22,6 +22,10 @@ export class UsersResource {
 
   /**
    * Retrieve the authenticated user associated with the API token.
+   *
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The {@link User} that owns the provided token.
+   * @throws {APIError} When the API responds with an error status.
    */
   async retrieveCurrent(options?: RequestOptions): Promise<User> {
     const response = await this.http.request<User>({
@@ -35,6 +39,11 @@ export class UsersResource {
 
   /**
    * List all users for the current company.
+   *
+   * @param query Optional pagination controls (`page`, `per_page`).
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Array of {@link User} records.
+   * @throws {APIError} When the API responds with an error status.
    */
   async list(
     query?: PaginationQueryParams,
@@ -52,6 +61,11 @@ export class UsersResource {
 
   /**
    * Create a new user within the company.
+   *
+   * @param body Payload describing the user to create.
+   * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
+   * @returns The created {@link User}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async create(
     body: CreateUserRequestBody,
@@ -71,6 +85,11 @@ export class UsersResource {
 
   /**
    * Retrieve a specific user by identifier.
+   *
+   * @param userId Identifier of the user to fetch.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The requested {@link User}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async retrieve(userId: string, options?: RequestOptions): Promise<User> {
     const response = await this.http.request<User>({
@@ -84,6 +103,12 @@ export class UsersResource {
 
   /**
    * Update an existing user record.
+   *
+   * @param userId Identifier of the user to update.
+   * @param body Payload describing the updated user attributes.
+   * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
+   * @returns The updated {@link User}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async update(
     userId: string,
@@ -104,6 +129,11 @@ export class UsersResource {
 
   /**
    * Delete a user from the company.
+   *
+   * @param userId Identifier of the user to delete.
+   * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
+   * @returns Resolves to void when deletion succeeds.
+   * @throws {APIError} When the API responds with an error status.
    */
   async delete(
     userId: string,

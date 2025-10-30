@@ -33,6 +33,8 @@ import {
 
 /**
  * Resource handling operations on projects and their associated sub-resources.
+ * Exposes nested helpers for photos, assignees, collaborators, invitations, labels,
+ * documents, comments, and checklists. All requests propagate APIError on failure.
  */
 export class ProjectsResource {
   readonly photos: ProjectPhotosResource;
@@ -59,6 +61,11 @@ export class ProjectsResource {
 
   /**
    * Retrieve a paginated list of projects for the company.
+   *
+   * @param query Optional filters and pagination controls declared in the spec.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Array of {@link Project} records.
+   * @throws {APIError} When the API responds with an error status.
    */
   async list(
     query?: ListProjectsQueryParams,
@@ -76,6 +83,11 @@ export class ProjectsResource {
 
   /**
    * Create a new project.
+   *
+   * @param body Payload defining the project attributes, matching the spec schema.
+   * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
+   * @returns The newly created {@link Project}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async create(
     body: CreateProjectRequestBody,
@@ -95,6 +107,11 @@ export class ProjectsResource {
 
   /**
    * Retrieve a single project by identifier.
+   *
+   * @param projectId Identifier of the project to fetch.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The requested {@link Project}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async retrieve(projectId: string, options?: RequestOptions): Promise<Project> {
     const response = await this.http.request<Project>({
@@ -108,6 +125,12 @@ export class ProjectsResource {
 
   /**
    * Update the core attributes of a project.
+   *
+   * @param projectId Identifier of the project to update.
+   * @param body Payload describing the replacement project attributes.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The updated {@link Project}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async update(
     projectId: string,
@@ -126,6 +149,11 @@ export class ProjectsResource {
 
   /**
    * Permanently delete a project.
+   *
+   * @param projectId Identifier of the project to delete.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Resolves to void when deletion succeeds.
+   * @throws {APIError} When the API responds with an error status.
    */
   async delete(projectId: string, options?: RequestOptions): Promise<void> {
     await this.http.request<void>({
@@ -137,6 +165,11 @@ export class ProjectsResource {
 
   /**
    * Archive a project to remove it from active listings.
+   *
+   * @param projectId Identifier of the project to archive.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The archived {@link Project}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async archive(projectId: string, options?: RequestOptions): Promise<Project> {
     const response = await this.http.request<Project>({
@@ -150,6 +183,11 @@ export class ProjectsResource {
 
   /**
    * Restore an archived project back to active status.
+   *
+   * @param projectId Identifier of the project to restore.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The restored {@link Project}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async restore(projectId: string, options?: RequestOptions): Promise<Project> {
     const response = await this.http.request<Project>({
@@ -163,13 +201,20 @@ export class ProjectsResource {
 }
 
 /**
- * Manage photos attached to a project.
+ * Manage photos attached to a project. Methods mirror the project photo endpoints and
+ * propagate APIError on failure.
  */
 export class ProjectPhotosResource {
   constructor(private readonly http: HttpClient) {}
 
   /**
    * List photos associated with a project with optional filtering.
+   *
+   * @param projectId Identifier of the project whose photos are requested.
+   * @param query Pagination and filtering parameters declared in the spec.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Array of {@link Photo} records.
+   * @throws {APIError} When the API responds with an error status.
    */
   async list(
     projectId: string,
@@ -188,6 +233,12 @@ export class ProjectPhotosResource {
 
   /**
    * Upload a new project photo via URI payload.
+   *
+   * @param projectId Identifier of the project that owns the photo.
+   * @param body Payload describing the image to upload, matching the spec schema.
+   * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
+   * @returns The created {@link Photo}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async create(
     projectId: string,
@@ -215,6 +266,12 @@ export class ProjectAssigneesResource {
 
   /**
    * List users assigned to a project.
+   *
+   * @param projectId Identifier of the project to inspect.
+   * @param query Optional pagination controls (`page`, `per_page`).
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Array of {@link User} records.
+   * @throws {APIError} When the API responds with an error status.
    */
   async list(
     projectId: string,
@@ -233,6 +290,12 @@ export class ProjectAssigneesResource {
 
   /**
    * Assign a user to the project.
+   *
+   * @param projectId Identifier of the project to update.
+   * @param userId Identifier of the user to assign.
+   * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
+   * @returns The updated {@link User} assignment payload.
+   * @throws {APIError} When the API responds with an error status.
    */
   async assign(
     projectId: string,
@@ -252,6 +315,12 @@ export class ProjectAssigneesResource {
 
   /**
    * Remove a user assignment from the project.
+   *
+   * @param projectId Identifier of the project to update.
+   * @param userId Identifier of the user assignment to remove.
+   * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
+   * @returns Resolves to void when removal succeeds.
+   * @throws {APIError} When the API responds with an error status.
    */
   async remove(
     projectId: string,
@@ -269,13 +338,19 @@ export class ProjectAssigneesResource {
 }
 
 /**
- * Manage the free-form project notepad content.
+ * Manage the free-form project notepad content associated with a project.
  */
 export class ProjectNotepadResource {
   constructor(private readonly http: HttpClient) {}
 
   /**
    * Update the notepad content for a project.
+   *
+   * @param projectId Identifier of the project whose notepad should be updated.
+   * @param body Payload containing the new notepad content.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The updated {@link ProjectNotepad}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async update(
     projectId: string,
@@ -301,6 +376,12 @@ export class ProjectCollaboratorsResource {
 
   /**
    * List collaborators invited to the project.
+   *
+   * @param projectId Identifier of the project to inspect.
+   * @param query Optional pagination controls (`page`, `per_page`).
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Array of {@link ProjectCollaborator} records.
+   * @throws {APIError} When the API responds with an error status.
    */
   async list(
     projectId: string,
@@ -326,6 +407,12 @@ export class ProjectInvitationsResource {
 
   /**
    * List all invitations issued for the project.
+   *
+   * @param projectId Identifier of the project to inspect.
+   * @param query Optional pagination controls (`page`, `per_page`).
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Array of {@link ProjectInvitation} records.
+   * @throws {APIError} When the API responds with an error status.
    */
   async list(
     projectId: string,
@@ -344,6 +431,11 @@ export class ProjectInvitationsResource {
 
   /**
    * Issue a new project invitation.
+   *
+   * @param projectId Identifier of the project sending the invitation.
+   * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
+   * @returns The created {@link ProjectInvitation}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async create(
     projectId: string,
@@ -369,6 +461,12 @@ export class ProjectLabelsResource {
 
   /**
    * List labels that have been applied to the project.
+   *
+   * @param projectId Identifier of the project to inspect.
+   * @param query Optional pagination controls (`page`, `per_page`).
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Array of {@link Tag} records.
+   * @throws {APIError} When the API responds with an error status.
    */
   async list(
     projectId: string,
@@ -387,6 +485,12 @@ export class ProjectLabelsResource {
 
   /**
    * Apply new labels to the project.
+   *
+   * @param projectId Identifier of the project to update.
+   * @param body Payload listing the labels to assign.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The {@link Tag} response returned by the API.
+   * @throws {APIError} When the API responds with an error status.
    */
   async create(
     projectId: string,
@@ -405,6 +509,12 @@ export class ProjectLabelsResource {
 
   /**
    * Remove a label from the project.
+   *
+   * @param projectId Identifier of the project to update.
+   * @param labelId Identifier of the label to remove.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Resolves to void when deletion succeeds.
+   * @throws {APIError} When the API responds with an error status.
    */
   async delete(
     projectId: string,
@@ -427,6 +537,12 @@ export class ProjectDocumentsResource {
 
   /**
    * List documents uploaded to the project.
+   *
+   * @param projectId Identifier of the project to inspect.
+   * @param query Optional pagination controls (`page`, `per_page`).
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Array of {@link Document} records.
+   * @throws {APIError} When the API responds with an error status.
    */
   async list(
     projectId: string,
@@ -445,6 +561,12 @@ export class ProjectDocumentsResource {
 
   /**
    * Upload a new document to the project.
+   *
+   * @param projectId Identifier of the project that owns the document.
+   * @param body Payload containing the document metadata and attachment.
+   * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
+   * @returns The created {@link Document}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async create(
     projectId: string,
@@ -472,6 +594,12 @@ export class ProjectCommentsResource {
 
   /**
    * List comments recorded on the project.
+   *
+   * @param projectId Identifier of the project to inspect.
+   * @param query Optional pagination controls (`page`, `per_page`).
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Array of {@link Comment} records.
+   * @throws {APIError} When the API responds with an error status.
    */
   async list(
     projectId: string,
@@ -490,6 +618,12 @@ export class ProjectCommentsResource {
 
   /**
    * Add a comment to the project discussion.
+   *
+   * @param projectId Identifier of the project to update.
+   * @param body Payload describing the comment content.
+   * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
+   * @returns The created {@link Comment}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async create(
     projectId: string,
@@ -517,6 +651,11 @@ export class ProjectChecklistsResource {
 
   /**
    * List checklists belonging to the project.
+   *
+   * @param projectId Identifier of the project to inspect.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns Array of {@link Checklist} records.
+   * @throws {APIError} When the API responds with an error status.
    */
   async list(
     projectId: string,
@@ -533,6 +672,12 @@ export class ProjectChecklistsResource {
 
   /**
    * Create a checklist on the project, optionally from a template.
+   *
+   * @param projectId Identifier of the project to update.
+   * @param body Payload indicating the template selection or checklist details.
+   * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
+   * @returns The created {@link Checklist}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async create(
     projectId: string,
@@ -553,6 +698,12 @@ export class ProjectChecklistsResource {
 
   /**
    * Retrieve a single checklist associated with the project.
+   *
+   * @param projectId Identifier of the project owning the checklist.
+   * @param checklistId Identifier of the checklist to fetch.
+   * @param options Optional request overrides such as alternate auth token or abort signal.
+   * @returns The requested {@link Checklist}.
+   * @throws {APIError} When the API responds with an error status.
    */
   async retrieve(
     projectId: string,
