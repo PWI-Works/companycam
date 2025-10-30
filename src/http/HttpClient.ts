@@ -131,6 +131,14 @@ export class HttpClient {
     }
   }
 
+  /**
+   * Perform an HTTP request with the configured defaults and return the raw axios response.
+   *
+   * @param options Axios request configuration along with SDK-specific overrides such as
+   * bearer token overrides, idempotency keys, and rate-limiter hints.
+   * @returns The axios response object containing the typed payload.
+   * @throws {APIError} When the underlying request fails with a non-success status code.
+   */
   async request<T = unknown, D = unknown>(
     options: HttpRequestOptions<D>
   ): Promise<AxiosResponse<T>> {
@@ -155,14 +163,6 @@ export class HttpClient {
     }
   }
 
-  /**
-   * Perform an HTTP request with the configured defaults and return the raw axios response.
-   *
-   * @param options Axios request configuration along with SDK-specific overrides such as
-   * bearer token overrides, idempotency keys, and rate-limiter hints.
-   * @returns The axios response object containing the typed payload.
-   * @throws {APIError} When the underlying request fails with a non-success status code.
-   */
   /**
    * Dispose of owned resources such as the internal rate limiter.
    */
