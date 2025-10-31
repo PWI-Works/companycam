@@ -81,14 +81,14 @@ export class PhotosResource {
    */
   async update(
     photoId: string,
-    internal?: boolean,
+    payload: { internal?: boolean },
     options?: RequestOptions
   ): Promise<Photo> {
     const response = await this.http.request<Photo>({
       ...buildRequestConfig(options),
       method: "PUT",
       url: `/photos/${encodePathParam(photoId)}`,
-      data: { photo: {internal} },
+      data: { photo: payload },
     });
 
     return response.data;

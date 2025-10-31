@@ -2,7 +2,7 @@ import type {
   PaginationQueryParams,
   User,
   UserCreatePayload,
-  UserMutable,
+  UserUpdatePayload,
 } from "../interfaces.js";
 import type { HttpClient } from "../http/HttpClient.js";
 import {
@@ -112,7 +112,7 @@ export class UsersResource {
    */
   async update(
     userId: string,
-    updates: UserMutable,
+    updates: UserUpdatePayload,
     options?: UserScopedRequestOptions
   ): Promise<User> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);

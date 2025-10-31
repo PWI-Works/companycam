@@ -14,32 +14,40 @@ export interface Company {
 }
 
 /**
- * Fields accepted by the API when creating or updating a user.
+ * Fields accepted by the API when updating a user.
  * Mirrors the mutable subset of the User schema.
  */
-export interface UserMutable {
+interface UserMutable {
   first_name?: string;
   last_name?: string;
   email_address?: string;
-  phone_number?: string | null;
+}
+
+/**
+ * Additional attributes permitted during user update requests.
+ */
+export interface UserUpdatePayload extends UserMutable {
   password?: string;
+  phone_number?: string;
 }
 
 /**
  * Additional attributes permitted during user creation requests.
  */
-export interface UserCreatePayload extends UserMutable {
-  user_role?: string;
+export interface UserCreatePayload extends UserUpdatePayload {
+  /// user role. Defaults to "standard" if not provided.
+  user_role?: "standard" | "restricted";
 }
 
 /**
  * Representation of the user.
  */
-export interface User extends Omit<UserMutable, "password"> {
+export interface User extends UserMutable {
   id: string;
   company_id?: string;
   status?: "active" | "deleted";
   profile_image?: Array<ImageURI>;
+  phone_number?: string | null;
   created_at?: number;
   updated_at?: number;
   user_url?: string;
@@ -86,10 +94,10 @@ export interface Project extends ProjectMutable {
 }
 
 /**
- * Fields accepted when updating a photo.
+ * Fields accepted when creating a photo.
  */
 export interface PhotoMutable {
-  coordinates?: Array<Coordinate>;
+  coordinates?: Coordinate;
   uri: string;
   captured_at: number;
   description?: string;
@@ -99,7 +107,7 @@ export interface PhotoMutable {
 /**
  * Representation of the photo.
  */
-export interface Photo extends PhotoMutable {
+export interface Photo {
   id: string;
   company_id?: string;
   creator_id?: string;
@@ -112,12 +120,15 @@ export interface Photo extends PhotoMutable {
     | "processed"
     | "processing_error"
     | "duplicate";
+  coordinates?: Array<Coordinate>;
   uris?: Array<ImageURI>;
   hash?: string;
+  description?: string;
+  internal?: boolean;
   photo_url?: string;
+  captured_at?: number;
   created_at?: number;
   updated_at?: number;
-  internal?: boolean;
 }
 
 /**
