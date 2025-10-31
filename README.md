@@ -48,7 +48,7 @@ When that happens, we follow this pattern:
 * If **create** and **update** endpoints use the same fields, we define a single `...Mutable` interface and use it for both.
 * If field requirements differ, we define two separate interfaces — `...CreatePayload` and `...UpdatePayload` — to clearly show what each one expects.
 
-### Example: Listing all Users
+### Example: Listing all Users with Pagination
 ```ts
 import { createClient, User, PaginationQueryParams } from "companycam";
 
