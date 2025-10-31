@@ -1,4 +1,8 @@
-import type { PaginationQueryParams, Tag } from "../interfaces.js";
+import type {
+  PaginationQueryParams,
+  Tag,
+  TagMutable,
+} from "../interfaces.js";
 import type { HttpClient } from "../http/HttpClient.js";
 import {
   buildRequestConfig,
@@ -38,17 +42,17 @@ export class TagsResource {
   /**
    * Create a new tag.
    *
-   * @param displayValue Human-readable tag label as described in the spec.
+   * @param payload Mutable tag attributes taken directly from the spec.
    * @param options Optional request overrides such as alternate auth token or abort signal.
    * @returns The created {@link Tag}.
    * @throws {APIError} When the API responds with an error status.
    */
-  async create(displayValue: string, options?: RequestOptions): Promise<Tag> {
+  async create(payload: TagMutable, options?: RequestOptions): Promise<Tag> {
     const response = await this.http.request<Tag>({
       ...buildRequestConfig(options),
       method: "POST",
       url: "/tags",
-      data: { tag: { display_value: displayValue } },
+      data: { tag: payload },
     });
 
     return response.data;
@@ -76,21 +80,21 @@ export class TagsResource {
    * Update an existing tag.
    *
    * @param tagId Identifier of the tag to update.
-   * @param displayValue New human-readable label defined by the spec.
+   * @param payload Mutable tag attributes taken directly from the spec.
    * @param options Optional request overrides such as alternate auth token or abort signal.
    * @returns The updated {@link Tag}.
    * @throws {APIError} When the API responds with an error status.
    */
   async update(
     tagId: string,
-    displayValue: string,
+    payload: TagMutable,
     options?: RequestOptions
   ): Promise<Tag> {
     const response = await this.http.request<Tag>({
       ...buildRequestConfig(options),
       method: "PUT",
       url: `/tags/${encodePathParam(tagId)}`,
-      data: { tag: { display_value: displayValue } },
+      data: { tag: payload },
     });
 
     return response.data;

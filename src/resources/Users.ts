@@ -1,4 +1,9 @@
-import type { PaginationQueryParams, User } from "../interfaces.js";
+import type {
+  PaginationQueryParams,
+  User,
+  UserCreatePayload,
+  UserMutable,
+} from "../interfaces.js";
 import type { HttpClient } from "../http/HttpClient.js";
 import {
   buildRequestConfig,
@@ -57,20 +62,13 @@ export class UsersResource {
   /**
    * Create a new user within the company.
    *
-   * @param user Attributes describing the user to create.
+   * @param user Mutable attributes describing the user to create.
    * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
    * @returns The created {@link User}.
    * @throws {APIError} When the API responds with an error status.
    */
   async create(
-    user: {
-      first_name?: User["first_name"];
-      last_name?: User["last_name"];
-      email_address?: User["email_address"];
-      phone_number?: User["phone_number"];
-      password?: string;
-      user_role?: string;
-    },
+    user: UserCreatePayload,
     options?: UserScopedRequestOptions
   ): Promise<User> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);
@@ -107,20 +105,14 @@ export class UsersResource {
    * Update an existing user record.
    *
    * @param userId Identifier of the user to update.
-   * @param updates Attributes describing the changes to apply.
+   * @param updates Mutable attributes describing the changes to apply.
    * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
    * @returns The updated {@link User}.
    * @throws {APIError} When the API responds with an error status.
    */
   async update(
     userId: string,
-    updates: {
-      first_name?: User["first_name"];
-      last_name?: User["last_name"];
-      email_address?: User["email_address"];
-      phone_number?: User["phone_number"];
-      password?: string;
-    },
+    updates: UserMutable,
     options?: UserScopedRequestOptions
   ): Promise<User> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);

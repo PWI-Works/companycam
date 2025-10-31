@@ -74,25 +74,21 @@ export class PhotosResource {
    * Update a photo, typically toggling the internal flag.
    *
    * @param photoId Identifier of the photo to update.
-   * @param internal Optional internal visibility flag taken directly from the spec.
+   * @param payload Mutable photo attributes forwarded to the API.
    * @param options Optional request overrides such as alternate auth token or abort signal.
    * @returns The updated {@link Photo}.
    * @throws {APIError} When the API responds with an error status.
    */
   async update(
     photoId: string,
-    internal?: Photo["internal"],
+    internal?: boolean,
     options?: RequestOptions
   ): Promise<Photo> {
-    const photoPayload =
-      internal !== undefined
-        ? { internal }
-        : {};
     const response = await this.http.request<Photo>({
       ...buildRequestConfig(options),
       method: "PUT",
       url: `/photos/${encodePathParam(photoId)}`,
-      data: { photo: photoPayload },
+      data: { photo: {internal} },
     });
 
     return response.data;

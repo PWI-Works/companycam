@@ -1,4 +1,8 @@
-import type { PaginationQueryParams, Webhook } from "../interfaces.js";
+import type {
+  PaginationQueryParams,
+  Webhook,
+  WebhookMutable,
+} from "../interfaces.js";
 import type { HttpClient } from "../http/HttpClient.js";
 import {
   buildRequestConfig,
@@ -38,18 +42,13 @@ export class WebhooksResource {
   /**
    * Create a webhook subscription.
    *
-   * @param payload Attributes describing the webhook to create.
+   * @param payload Mutable webhook attributes aligned with the spec.
    * @param options Optional request overrides such as alternate auth token or abort signal.
    * @returns The created {@link Webhook}.
    * @throws {APIError} When the API responds with an error status.
    */
   async create(
-    payload: {
-      url?: Webhook["url"];
-      scopes?: Webhook["scopes"];
-      enabled?: Webhook["enabled"];
-      token?: Webhook["token"];
-    },
+    payload: WebhookMutable,
     options?: RequestOptions
   ): Promise<Webhook> {
     const response = await this.http.request<Webhook>({
@@ -84,19 +83,14 @@ export class WebhooksResource {
    * Update a webhook registration.
    *
    * @param webhookId Identifier of the webhook to update.
-   * @param payload Attributes describing the updated webhook configuration.
+   * @param payload Mutable webhook attributes aligned with the spec.
    * @param options Optional request overrides such as alternate auth token or abort signal.
    * @returns The updated {@link Webhook}.
    * @throws {APIError} When the API responds with an error status.
    */
   async update(
     webhookId: string,
-    payload: {
-      url?: Webhook["url"];
-      scopes?: Webhook["scopes"];
-      enabled?: Webhook["enabled"];
-      token?: Webhook["token"];
-    },
+    payload: WebhookMutable,
     options?: RequestOptions
   ): Promise<Webhook> {
     const response = await this.http.request<Webhook>({

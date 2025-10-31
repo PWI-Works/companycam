@@ -79,6 +79,42 @@ describe("ProjectsResource", () => {
     });
   });
 
+  it("updates a project with the shared mutable payload", async () => {
+    // The update helper should forward the payload verbatim to ensure type reuse.
+    const project: Project = { id: "789" };
+    const updates = {
+      name: "Kitchen facelift",
+      geofence: [{ lat: 12.3, lon: 45.6 }],
+    };
+    request.mockResolvedValueOnce(buildResponse(project));
+
+    const result = await resource.update("proj 789", updates);
+
+    expect(result).toEqual(project);
+    const call = request.mock.calls[0]?.[0];
+    expect(call).toMatchObject({
+      method: "PUT",
+      url: "/projects/proj%20789",
+      data: updates,
+    });
+  });
+
+  it("updates the project notepad using the mutable wrapper", async () => {
+    // The notepad update should send the payload without nesting or transformation.
+    const notepadPayload = { notepad: "Final walk-through scheduled" };
+    request.mockResolvedValueOnce(buildResponse(notepadPayload));
+
+    const result = await resource.notepad.update("proj-42", notepadPayload);
+
+    expect(result).toEqual(notepadPayload);
+    const call = request.mock.calls[0]?.[0];
+    expect(call).toMatchObject({
+      method: "PUT",
+      url: "/projects/proj-42/notepad",
+      data: notepadPayload,
+    });
+  });
+
   it("encodes project identifiers when retrieving a single project", async () => {
     // Identifiers containing reserved characters must be URL encoded exactly once.
     const project: Project = { id: "789" };

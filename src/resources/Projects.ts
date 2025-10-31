@@ -1,8 +1,6 @@
 import type {
-  Address,
   Checklist,
   Comment,
-  Coordinate,
   Document,
   ListProjectPhotosQueryParams,
   ListProjectsQueryParams,
@@ -10,11 +8,14 @@ import type {
   Photo,
   Project,
   ProjectCollaborator,
-  ProjectContactRequest,
+  ProjectCreatePayload,
+  ProjectMutable,
   ProjectInvitation,
   ProjectNotepad,
+  ProjectNotepadMutable,
   Tag,
   User,
+  PhotoMutable,
 } from "../interfaces.js";
 import type { HttpClient } from "../http/HttpClient.js";
 import {
@@ -79,19 +80,13 @@ export class ProjectsResource {
   /**
    * Create a new project.
    *
-   * @param project Attributes defining the project, matching the spec schema.
+   * @param project Mutable attributes comprising the project creation payload.
    * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
    * @returns The newly created {@link Project}.
    * @throws {APIError} When the API responds with an error status.
    */
   async create(
-    project: {
-      name?: Project["name"];
-      address?: Address;
-      coordinates?: Coordinate;
-      geofence?: Project["geofence"];
-      primary_contact?: ProjectContactRequest;
-    },
+    project: ProjectCreatePayload,
     options?: UserScopedRequestOptions
   ): Promise<Project> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);
@@ -114,7 +109,10 @@ export class ProjectsResource {
    * @returns The requested {@link Project}.
    * @throws {APIError} When the API responds with an error status.
    */
-  async retrieve(projectId: string, options?: RequestOptions): Promise<Project> {
+  async retrieve(
+    projectId: string,
+    options?: RequestOptions
+  ): Promise<Project> {
     const response = await this.http.request<Project>({
       ...buildRequestConfig(options),
       method: "GET",
@@ -135,12 +133,7 @@ export class ProjectsResource {
    */
   async update(
     projectId: string,
-    updates: {
-      name?: Project["name"];
-      address?: Address;
-      coordinates?: Coordinate;
-      geofence?: Project["geofence"];
-    },
+    updates: ProjectMutable,
     options?: RequestOptions
   ): Promise<Project> {
     const response = await this.http.request<Project>({
@@ -248,13 +241,7 @@ export class ProjectPhotosResource {
    */
   async create(
     projectId: string,
-    photo: {
-      coordinates?: Photo["coordinates"];
-      uri: string;
-      captured_at: number;
-      description?: Photo["description"];
-      tags?: string[];
-    },
+    photo: PhotoMutable,
     options?: UserScopedRequestOptions
   ): Promise<Photo> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);
@@ -318,7 +305,9 @@ export class ProjectAssigneesResource {
     const response = await this.http.request<User>({
       ...buildRequestConfig(requestOptions),
       method: "PUT",
-      url: `/projects/${encodePathParam(projectId)}/assigned_users/${encodePathParam(userId)}`,
+      url: `/projects/${encodePathParam(
+        projectId
+      )}/assigned_users/${encodePathParam(userId)}`,
       headers: userContext ? { "X-CompanyCam-User": userContext } : undefined,
     });
 
@@ -343,7 +332,9 @@ export class ProjectAssigneesResource {
     await this.http.request<void>({
       ...buildRequestConfig(requestOptions),
       method: "DELETE",
-      url: `/projects/${encodePathParam(projectId)}/assigned_users/${encodePathParam(userId)}`,
+      url: `/projects/${encodePathParam(
+        projectId
+      )}/assigned_users/${encodePathParam(userId)}`,
       headers: userContext ? { "X-CompanyCam-User": userContext } : undefined,
     });
   }
@@ -359,21 +350,21 @@ export class ProjectNotepadResource {
    * Update the notepad content for a project.
    *
    * @param projectId Identifier of the project whose notepad should be updated.
-   * @param notepad New notepad content pulled directly from the spec.
+   * @param payload New notepad content pulled directly from the spec.
    * @param options Optional request overrides such as alternate auth token or abort signal.
    * @returns The updated {@link ProjectNotepad}.
    * @throws {APIError} When the API responds with an error status.
    */
   async update(
     projectId: string,
-    notepad: string,
+    payload: ProjectNotepadMutable,
     options?: RequestOptions
   ): Promise<ProjectNotepad> {
     const response = await this.http.request<ProjectNotepad>({
       ...buildRequestConfig(options),
       method: "PUT",
       url: `/projects/${encodePathParam(projectId)}/notepad`,
-      data: { notepad },
+      data: payload,
     });
 
     return response.data;
@@ -536,7 +527,9 @@ export class ProjectLabelsResource {
     await this.http.request<void>({
       ...buildRequestConfig(options),
       method: "DELETE",
-      url: `/projects/${encodePathParam(projectId)}/labels/${encodePathParam(labelId)}`,
+      url: `/projects/${encodePathParam(projectId)}/labels/${encodePathParam(
+        labelId
+      )}`,
     });
   }
 }
@@ -732,7 +725,9 @@ export class ProjectChecklistsResource {
     const response = await this.http.request<Checklist>({
       ...buildRequestConfig(options),
       method: "GET",
-      url: `/projects/${encodePathParam(projectId)}/checklists/${encodePathParam(checklistId)}`,
+      url: `/projects/${encodePathParam(
+        projectId
+      )}/checklists/${encodePathParam(checklistId)}`,
     });
 
     return response.data;

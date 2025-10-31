@@ -64,4 +64,21 @@ describe("PhotosResource", () => {
       data: { tags: ["demo"] },
     });
   });
+
+  it("updates a photo using the mutable payload", async () => {
+    // The update helper should wrap the payload in the expected `photo` envelope.
+    const photo: Photo = { id: "p-2" };
+    const payload = { internal: true };
+    request.mockResolvedValueOnce(buildResponse(photo));
+
+    const result = await resource.update("photo 2", payload);
+
+    expect(result).toEqual(photo);
+    const call = request.mock.calls[0]?.[0];
+    expect(call).toMatchObject({
+      method: "PUT",
+      url: "/photos/photo%202",
+      data: { photo: payload },
+    });
+  });
 });

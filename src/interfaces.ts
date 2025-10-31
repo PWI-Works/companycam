@@ -14,26 +14,58 @@ export interface Company {
 }
 
 /**
- * Representation of the user.
+ * Fields accepted by the API when creating or updating a user.
+ * Mirrors the mutable subset of the User schema.
  */
-export interface User {
-  id: string;
-  company_id?: string;
-  email_address?: string;
-  status?: "active" | "deleted";
+export interface UserMutable {
   first_name?: string;
   last_name?: string;
-  profile_image?: Array<ImageURI>;
+  email_address?: string;
   phone_number?: string | null;
+  password?: string;
+}
+
+/**
+ * Additional attributes permitted during user creation requests.
+ */
+export interface UserCreatePayload extends UserMutable {
+  user_role?: string;
+}
+
+/**
+ * Representation of the user.
+ */
+export interface User extends Omit<UserMutable, "password"> {
+  id: string;
+  company_id?: string;
+  status?: "active" | "deleted";
+  profile_image?: Array<ImageURI>;
   created_at?: number;
   updated_at?: number;
   user_url?: string;
 }
 
 /**
+ * Fields accepted when creating or updating a project.
+ */
+export interface ProjectMutable {
+  name?: string | null;
+  address?: Address;
+  coordinates?: Coordinate;
+  geofence?: Array<Coordinate>;
+}
+
+/**
+ * Additional attributes allowed when creating a project.
+ */
+export interface ProjectCreatePayload extends ProjectMutable {
+  primary_contact?: ProjectContactRequest;
+}
+
+/**
  * Representation of the project.
  */
-export interface Project {
+export interface Project extends ProjectMutable {
   id: string;
   company_id?: string;
   creator_id?: string;
@@ -41,16 +73,12 @@ export interface Project {
   creator_name?: string;
   status?: "active" | "deleted";
   archived?: boolean;
-  name?: string | null;
-  address?: Address;
-  coordinates?: Coordinate;
   featured_image?: Array<ImageURI>;
   project_url?: string;
   embedded_project_url?: string;
   integrations?: Array<ProjectIntegration>;
   slug?: string;
   public?: boolean;
-  geofence?: Array<Coordinate>;
   primary_contact?: ProjectContactResponse;
   notepad?: string;
   created_at?: number;
@@ -58,9 +86,20 @@ export interface Project {
 }
 
 /**
+ * Fields accepted when updating a photo.
+ */
+export interface PhotoMutable {
+  coordinates?: Array<Coordinate>;
+  uri: string;
+  captured_at: number;
+  description?: string;
+  tags?: string[];
+}
+
+/**
  * Representation of the photo.
  */
-export interface Photo {
+export interface Photo extends PhotoMutable {
   id: string;
   company_id?: string;
   creator_id?: string;
@@ -73,36 +112,46 @@ export interface Photo {
     | "processed"
     | "processing_error"
     | "duplicate";
-  coordinates?: Array<Coordinate>;
   uris?: Array<ImageURI>;
   hash?: string;
-  description?: string;
-  internal?: boolean;
   photo_url?: string;
-  captured_at?: number;
   created_at?: number;
   updated_at?: number;
+  internal?: boolean;
+}
+
+/**
+ * Fields accepted when creating or updating a tag.
+ */
+export interface TagMutable {
+  display_value?: string;
 }
 
 /**
  * Representation of the tag.
  */
-export interface Tag {
+export interface Tag extends TagMutable {
   id: string;
   company_id?: string;
-  display_value?: string;
   value?: string;
   created_at?: number;
   updated_at?: number;
 }
 
 /**
+ * Fields accepted when creating or updating a group.
+ */
+export interface GroupMutable {
+  name?: string;
+  users?: Array<string>;
+}
+
+/**
  * Representation of the group.
  */
-export interface Group {
+export interface Group extends Omit<GroupMutable, "users"> {
   id: string;
   company_id?: string;
-  name?: string;
   users?: Array<User>;
   status?: "active" | "deleted";
   group_url?: string;
@@ -111,15 +160,21 @@ export interface Group {
 }
 
 /**
- * Representation of the webhook.
+ * Fields accepted when creating or updating a webhook.
  */
-export interface Webhook {
-  id: string;
-  company_id?: string;
+export interface WebhookMutable {
   url?: string;
   scopes?: Array<string>;
-  token?: string;
   enabled?: boolean;
+  token?: string;
+}
+
+/**
+ * Representation of the webhook.
+ */
+export interface Webhook extends WebhookMutable {
+  id: string;
+  company_id?: string;
   created_at?: number;
   updated_at?: number;
 }
@@ -322,11 +377,16 @@ export interface ProjectContactRequest {
 }
 
 /**
- * Representation of the project notepad.
+ * Fields accepted when updating the project notepad.
  */
-export interface ProjectNotepad {
+export interface ProjectNotepadMutable {
   notepad: string;
 }
+
+/**
+ * Representation of the project notepad.
+ */
+export interface ProjectNotepad extends ProjectNotepadMutable {}
 
 /**
  * Representation of the project collaborator.
