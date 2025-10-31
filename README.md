@@ -104,6 +104,14 @@ const createdUser: User = await client.users.create(payload, {
 console.log(createdUser.id);
 ```
 
+## Working with AI Agents
+AI agents make coding fast and efficient. However, many agents struggle to understand the latest npm packages and how to use them correctly.
+
+The ideal solution is to write an MCP server for your package. However, to keep things simple, we've provided the next best option: an agent prompt file designed for working with agents. You can find it at [AGENT_PROMPT.md](AGENT_PROMPT.md).
+
+> ⚠️ This prompt is experimental and results may vary. If you find ways to make it better, please consider [contributing to the project](CONTRIBUTING.md) so others can benefit from your expertise!
+
+
 ## Configuration
 
 `createClient` accepts `ClientOptions`, which mirror the exported `HttpClientConfig`. Key options include:
