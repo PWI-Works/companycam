@@ -1,3 +1,11 @@
+## [1.1.1](https://github.com/PWI-Works/companycam/compare/v1.1.0...v1.1.1) (2025-10-31)
+
+
+### Bug Fixes
+
+* don't make payload optional for create and update groups ([4269029](https://github.com/PWI-Works/companycam/commit/4269029e095402bfe8272607a2b9afffe1343b5e))
+* remove bad import of UserMutable (no longer exported) in tests ([fc28553](https://github.com/PWI-Works/companycam/commit/fc28553e1e6a89e7509bbd218072e0a05d659a00))
+
 # [1.1.0](https://github.com/PWI-Works/companycam/compare/v1.0.3...v1.1.0) (2025-10-30)
 
 
