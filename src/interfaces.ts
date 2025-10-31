@@ -56,17 +56,24 @@ export interface User extends UserMutable {
 /**
  * Fields accepted when creating or updating a project.
  */
-export interface ProjectMutable {
-  name?: string | null;
+interface ProjectMutable {
   address?: Address;
   coordinates?: Coordinate;
   geofence?: Array<Coordinate>;
 }
 
 /**
+ * Fields accepted when creating or updating a project.
+ */
+export interface ProjectUpdatePayload extends ProjectMutable {
+  /// defaults to "Joe Smith" if not provided
+  name?: string;
+}
+
+/**
  * Additional attributes allowed when creating a project.
  */
-export interface ProjectCreatePayload extends ProjectMutable {
+export interface ProjectCreatePayload extends ProjectUpdatePayload {
   primary_contact?: ProjectContactRequest;
 }
 
@@ -75,6 +82,7 @@ export interface ProjectCreatePayload extends ProjectMutable {
  */
 export interface Project extends ProjectMutable {
   id: string;
+  name?: string | null;
   company_id?: string;
   creator_id?: string;
   creator_type?: string;
@@ -89,6 +97,32 @@ export interface Project extends ProjectMutable {
   public?: boolean;
   primary_contact?: ProjectContactResponse;
   notepad?: string;
+  created_at?: number;
+  updated_at?: number;
+}
+
+/**
+ * Common fields for project contacts.
+ */
+interface ProjectContactMutable {
+  email?: string;
+  phone_number?: string;
+}
+
+/**
+ * Representation of the project contact request.
+ */
+export interface ProjectContactRequest extends ProjectContactMutable {
+  name: string;
+}
+
+/**
+ * Representation of the project contact response.
+ */
+export interface ProjectContactResponse extends ProjectContactMutable {
+  id?: string;
+  project_id?: string;
+  name?: string;
   created_at?: number;
   updated_at?: number;
 }
@@ -145,6 +179,18 @@ export interface Tag extends TagMutable {
   id: string;
   company_id?: string;
   value?: string;
+  created_at?: number;
+  updated_at?: number;
+}
+
+/**
+ * Representation of the checklist template.
+ */
+export interface ChecklistTemplate {
+  id?: string;
+  company_id?: string;
+  name?: string;
+  description?: string;
   created_at?: number;
   updated_at?: number;
 }
@@ -298,18 +344,6 @@ export interface SubTask {
 }
 
 /**
- * Representation of the checklist template.
- */
-export interface ChecklistTemplate {
-  id?: string;
-  company_id?: string;
-  name?: string;
-  description?: string;
-  created_at?: number;
-  updated_at?: number;
-}
-
-/**
  * Representation of the coordinate.
  */
 export interface Coordinate {
@@ -359,32 +393,10 @@ export interface Document {
 }
 
 /**
- * Representation of the project contact response.
- */
-export interface ProjectContactResponse {
-  id?: string;
-  project_id?: string;
-  name?: string;
-  email?: string;
-  phone_number?: string;
-  created_at?: number;
-  updated_at?: number;
-}
-
-/**
  * Representation of the error.
  */
 export interface Error {
   errors?: Array<string>;
-}
-
-/**
- * Representation of the project contact request.
- */
-export interface ProjectContactRequest {
-  name: string;
-  email?: string;
-  phone_number?: string;
 }
 
 /**

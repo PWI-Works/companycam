@@ -9,7 +9,7 @@ import type {
   Project,
   ProjectCollaborator,
   ProjectCreatePayload,
-  ProjectMutable,
+  ProjectUpdatePayload,
   ProjectInvitation,
   ProjectNotepad,
   ProjectNotepadMutable,
@@ -133,7 +133,7 @@ export class ProjectsResource {
    */
   async update(
     projectId: string,
-    updates: ProjectMutable,
+    updates: ProjectUpdatePayload,
     options?: RequestOptions
   ): Promise<Project> {
     const response = await this.http.request<Project>({
