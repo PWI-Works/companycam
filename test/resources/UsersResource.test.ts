@@ -1,7 +1,7 @@
 import type { AxiosResponse } from "axios";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { HttpClient } from "../../src/http/HttpClient.js";
-import type { User, UserCreatePayload, UserMutable } from "../../src/interfaces.js";
+import type { User, UserCreatePayload, UserUpdatePayload } from "../../src/interfaces.js";
 import { UsersResource } from "../../src/resources/Users.js";
 
 // Local helper mirroring the Axios response contract expected by the HttpClient.
@@ -52,7 +52,7 @@ describe("UsersResource", () => {
 
   it("submits mutable payloads directly when updating a user", async () => {
     // Update should forward the provided payload without additional wrapping.
-    const payload: UserMutable = { phone_number: "402-555-1111" };
+    const payload: UserUpdatePayload = { phone_number: "402-555-1111" };
     const user: User = { id: "user-2" };
     request.mockResolvedValueOnce(buildResponse(user));
 
