@@ -47,7 +47,7 @@ export class GroupsResource {
    * @throws {APIError} When the API responds with an error status.
   */
   async create(
-    payload: GroupMutable = {},
+    payload: GroupMutable,
     options?: UserScopedRequestOptions
   ): Promise<Group> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);
@@ -91,7 +91,7 @@ export class GroupsResource {
    */
   async update(
     groupId: string,
-    payload: GroupMutable = {},
+    payload: GroupMutable,
     options?: RequestOptions
   ): Promise<Group> {
     const response = await this.http.request<Group>({
