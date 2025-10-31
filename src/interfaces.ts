@@ -61,7 +61,7 @@ export interface User extends UserMutable {
 }
 
 /**
- * Fields accepted when creating or updating a project.
+ * Common fields shared accepted when creating or updating a project.
  */
 interface ProjectMutable {
   address?: Address;
@@ -113,7 +113,7 @@ export interface Project extends ProjectMutable {
   embedded_project_url?: string;
   /** A list of integrations associated with the Project */
   integrations?: Array<ProjectIntegration>;
-  /** A unique identifier use the Project that is used to construct some public URLs */
+  /** A unique identifier for the Project that is used to construct some public URLs */
   slug?: string;
   /** Indicates whether the Project's timeline and other public features are enabled */
   public?: boolean;
@@ -294,7 +294,7 @@ export interface Group extends Omit<GroupMutable, "users"> {
 export interface WebhookMutable {
   /** The URL of the webhook, which will receive requests with data for any events fired that fall within the scopes of the Webhook. */
   url?: string;
-  /** A list of scopes covering events the Webhook is subscripted to. */
+  /** A list of scopes covering events the Webhook is subscribed to. */
   scopes?: Array<string>;
   /** Whether or not the Webhook is enabled/active. */
   enabled?: boolean;
@@ -377,7 +377,7 @@ export interface Checklist {
   creator_id?: string;
   /** A unique identifier for the template used to create the Checklist */
   checklist_template_id?: string | null;
-  /** Flag indicating wether the Checklist is still being created or not */
+  /** Flag indicating whether the Checklist is still being created or not */
   is_populating?: boolean;
   /** A collection of tasks that are not associated with a section */
   sectionless_tasks?: Array<Task>;
