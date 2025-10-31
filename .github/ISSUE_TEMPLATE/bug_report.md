@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 **Describe the issue**  
-Briefly explain the problem you encountered while using the CompanyCam TypeScript SDK. If the behavior is different from what’s described in `companycam-openapi-spec.yaml`, please mention that.
+Briefly explain the problem you encountered while using the CompanyCam TypeScript SDK. If the behavior is different from what's described in `companycam-openapi-spec.yaml`, please mention that.
 
 **Where does it happen?**  
 List the API endpoints, SDK methods, or TypeScript interfaces involved. If possible, include links to the relevant part of the spec.

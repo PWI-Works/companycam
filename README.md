@@ -17,7 +17,7 @@ This repository publishes the TypeScript SDK straight from the authoritative `co
 
 ## Installation
 
-This repository is publihed to npm as [companycam](https://www.npmjs.com/package/companycam).
+This repository is published to npm as [companycam](https://www.npmjs.com/package/companycam).
 
 ```sh
 npm install companycam
@@ -38,17 +38,18 @@ console.log(projects.length);
 ```
 
 ## Basic Usage
-All objects and enpoints from the [CompanyCam API Documentation](https://docs.companycam.com/reference) are available for use. Calling these has been made intuitive and object oriented.
+All objects and endpoints from the [CompanyCam API Documentation](https://docs.companycam.com/reference) are available for use. Calling them is intuitive and object-oriented.
 
 Sometimes the API needs slightly different fields when creating or updating an object.
-Usually, both create and update use only part of the full object’s fields.
+Usually, both create and update use only part of the full object's fields.
 
 When that happens, we follow this pattern:
 
 * If **create** and **update** endpoints use the same fields, we define a single `...Mutable` interface and use it for both.
-* If field requirements differ, we define two separate interfaces — `...CreatePayload` and `...UpdatePayload` — to clearly show what each one expects.
+* If field requirements differ, we define two separate interfaces - `...CreatePayload` and `...UpdatePayload` - to clearly show what each one expects.
 
 ### Example: Listing all Users with Pagination
+
 ```ts
 import { createClient, User, PaginationQueryParams } from "companycam";
 
@@ -109,8 +110,7 @@ AI agents make coding fast and efficient. However, many agents struggle to under
 
 The ideal solution is to write an MCP server for your package. However, to keep things simple, we've provided the next best option: an agent prompt file designed for working with agents. You can find it at [AGENT_PROMPT.md](AGENT_PROMPT.md).
 
-> ⚠️ This prompt is experimental and results may vary. If you find ways to make it better, please consider [contributing to the project](CONTRIBUTING.md) so others can benefit from your expertise!
-
+> Note: This prompt is experimental and results may vary. If you find ways to make it better, please consider [contributing to the project](CONTRIBUTING.md) so others can benefit from your expertise!
 
 ## Configuration
 
