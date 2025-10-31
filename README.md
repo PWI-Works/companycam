@@ -8,7 +8,7 @@ Welcome to the home of the unofficial [CompanyCam](https://companycam.com/) Type
 Our focus is to provide:
 
 - **Accurate coverage of the API** by generating everything directly from the published OpenAPI spec.
-- **First-class TypeScript ergonomics** so you can enjoy autocompletion, safety, and predictable developer experience.
+- **First-class TypeScript ergonomics** so you can enjoy autocompletion, type safety, and a predictable developer experience.
 - **Clear contribution paths** for anyone who wants to improve the SDK, documentation, or automation.
 
 > Note: this project is not officially supported by [CompanyCam](https://companycam.com/). We created it because our organization needed to implement an integration between CompanyCam and our own apps. We hope that you find this useful! Our use case is limited to our own implementation, so there may be issues related to features we aren't using. Please feel free to contribute or report any issues that you find when using this library.
@@ -35,6 +35,73 @@ const client = createClient({
 
 const projects = await client.projects.list({ page: 1, per_page: 50 });
 console.log(projects.length);
+```
+
+## Basic Usage
+All objects and enpoints from the [CompanyCam API Documentation](https://docs.companycam.com/reference) are available for use. Calling these has been made intuitive and object oriented.
+
+Sometimes the API needs slightly different fields when creating or updating an object.
+Usually, both create and update use only part of the full object’s fields.
+
+When that happens, we follow this pattern:
+
+* If **create** and **update** endpoints use the same fields, we define a single `...Mutable` interface and use it for both.
+* If field requirements differ, we define two separate interfaces — `...CreatePayload` and `...UpdatePayload` — to clearly show what each one expects.
+
+### Example: Listing all Users
+```ts
+import { createClient, User, PaginationQueryParams } from "companycam";
+
+const client = createClient({
+  baseURL: "https://api.companycam.com/v2",
+  authToken: process.env.COMPANYCAM_TOKEN,
+});
+
+const perPage = 50;
+const allUsers: User[] = [];
+
+// Fetch each page until the API returns fewer records than requested.
+for (let page = 1; ; page += 1) {
+  const query: PaginationQueryParams = { page, per_page: perPage };
+  const usersFromQuery = await client.users.list(query);
+
+  allUsers.push(...usersFromQuery);
+
+  // Stop once the most recent page is not full, signaling there are no more results.
+  if (usersFromQuery.length < perPage) {
+    break;
+  }
+}
+
+console.log(`Fetched ${allUsers.length} users`);
+```
+
+### Example: Creating a User
+```ts
+import { createClient, User, UserCreatePayload } from "companycam";
+
+// set up the client
+const client = createClient({
+  baseURL: "https://api.companycam.com/v2",
+  authToken: process.env.COMPANYCAM_TOKEN,
+});
+
+// Prepare the payload following the POST /users schema.
+const payload: UserCreatePayload = {
+  first_name: "Shawn",
+  last_name: "Spencer",
+  email_address: "shawn.spencer@example.com",
+  phone_number: "4025551212",
+  password: "temporary-password",
+  user_role: "standard",
+};
+
+// Create the user while optionally attributing the action to another admin account.
+const createdUser: User = await client.users.create(payload, {
+  "X-CompanyCam-User": "admin@example.com",
+});
+
+console.log(createdUser.id);
 ```
 
 ## Configuration
