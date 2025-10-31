@@ -232,7 +232,7 @@ export class PhotoDescriptionsResource {
    * Update the description of a photo.
    *
    * @param photoId Identifier of the photo to update.
-    * @param description Description text to store.
+   * @param description Description text to store.
    * @param options Optional request overrides such as alternate auth token or abort signal.
    * @returns The updated {@link Photo}.
    * @throws {APIError} When the API responds with an error status.
