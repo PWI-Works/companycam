@@ -2,7 +2,6 @@ import type { AxiosResponse } from "axios";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { HttpClient } from "../../src/http/HttpClient.js";
 import type {
-  CreateProjectRequestBody,
   ListProjectsQueryParams,
   Project,
   User,
@@ -60,11 +59,11 @@ describe("ProjectsResource", () => {
 
   it("creates a project with user impersonation headers", async () => {
     // The resource should forward the impersonation header and request payload untouched.
-    const body: CreateProjectRequestBody = { name: "Garage Remodel" };
+    const projectInput = { name: "Garage Remodel" };
     const project: Project = { id: "456" };
     request.mockResolvedValueOnce(buildResponse(project));
 
-    const result = await resource.create(body, {
+    const result = await resource.create(projectInput, {
       authToken: "scoped-token",
       "X-CompanyCam-User": "crew.lead@example.com",
     });
@@ -76,7 +75,43 @@ describe("ProjectsResource", () => {
       url: "/projects",
       authToken: "scoped-token",
       headers: { "X-CompanyCam-User": "crew.lead@example.com" },
-      data: body,
+      data: projectInput,
+    });
+  });
+
+  it("updates a project with the shared mutable payload", async () => {
+    // The update helper should forward the payload verbatim to ensure type reuse.
+    const project: Project = { id: "789" };
+    const updates = {
+      name: "Kitchen facelift",
+      geofence: [{ lat: 12.3, lon: 45.6 }],
+    };
+    request.mockResolvedValueOnce(buildResponse(project));
+
+    const result = await resource.update("proj 789", updates);
+
+    expect(result).toEqual(project);
+    const call = request.mock.calls[0]?.[0];
+    expect(call).toMatchObject({
+      method: "PUT",
+      url: "/projects/proj%20789",
+      data: updates,
+    });
+  });
+
+  it("updates the project notepad using the mutable wrapper", async () => {
+    // The notepad update should send the payload without nesting or transformation.
+    const notepadPayload = { notepad: "Final walk-through scheduled" };
+    request.mockResolvedValueOnce(buildResponse(notepadPayload));
+
+    const result = await resource.notepad.update("proj-42", notepadPayload);
+
+    expect(result).toEqual(notepadPayload);
+    const call = request.mock.calls[0]?.[0];
+    expect(call).toMatchObject({
+      method: "PUT",
+      url: "/projects/proj-42/notepad",
+      data: notepadPayload,
     });
   });
 

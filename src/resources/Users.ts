@@ -1,8 +1,8 @@
 import type {
-  CreateUserRequestBody,
   PaginationQueryParams,
-  UpdateUserRequestBody,
   User,
+  UserCreatePayload,
+  UserUpdatePayload,
 } from "../interfaces.js";
 import type { HttpClient } from "../http/HttpClient.js";
 import {
@@ -62,13 +62,13 @@ export class UsersResource {
   /**
    * Create a new user within the company.
    *
-   * @param body Payload describing the user to create.
+   * @param user Mutable attributes describing the user to create.
    * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
    * @returns The created {@link User}.
    * @throws {APIError} When the API responds with an error status.
    */
   async create(
-    body: CreateUserRequestBody,
+    user: UserCreatePayload,
     options?: UserScopedRequestOptions
   ): Promise<User> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);
@@ -77,7 +77,7 @@ export class UsersResource {
       method: "POST",
       url: "/users",
       headers: userContext ? { "X-CompanyCam-User": userContext } : undefined,
-      data: body,
+      data: { user },
     });
 
     return response.data;
@@ -105,14 +105,14 @@ export class UsersResource {
    * Update an existing user record.
    *
    * @param userId Identifier of the user to update.
-   * @param body Payload describing the updated user attributes.
+   * @param updates Mutable attributes describing the changes to apply.
    * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
    * @returns The updated {@link User}.
    * @throws {APIError} When the API responds with an error status.
    */
   async update(
     userId: string,
-    body: UpdateUserRequestBody,
+    updates: UserUpdatePayload,
     options?: UserScopedRequestOptions
   ): Promise<User> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);
@@ -121,7 +121,7 @@ export class UsersResource {
       method: "PUT",
       url: `/users/${encodePathParam(userId)}`,
       headers: userContext ? { "X-CompanyCam-User": userContext } : undefined,
-      data: body,
+      data: updates,
     });
 
     return response.data;

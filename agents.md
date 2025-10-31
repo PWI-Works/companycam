@@ -24,7 +24,7 @@ You are an automation agent that generates and maintains a TypeScript SDK for th
 
 ### Generation Notes
 
-* Limit generation of interfaces to interfaces only, similar to what is already in `src/interfaces.ts`. Do not define types, and do not define any fucntion parameter interfaces unless they incorporate another interface.
+* Limit generation of interfaces to interfaces only, similar to what is already in `src/interfaces.ts`. Do not define types, and do not define any function parameter interfaces unless they incorporate another interface.
 * skip manifests or other auxiliary artifacts unless explicitly requested
 * Add thorough code comments to all code written - this code is for humans, not for machines
 
@@ -34,7 +34,7 @@ You are an automation agent that generates and maintains a TypeScript SDK for th
 * **Retries:** `axios-retry`
 
   * Retry on network errors, 408, 429, and 5xx.
-  * Exponential backoff with jitter (base ≈ 200ms; cap ≈ 8000ms).
+  * Exponential backoff with jitter (base about 200ms; cap about 8000ms).
   * Honor `Retry-After` header when present (cap to max backoff).
   * Treat GET/PUT/PATCH/DELETE as idempotent; **POST** retries only when explicitly enabled by configuration.
 * **Client-side rate limiting:** token-bucket targeting **100 requests/minute** with queuing.
@@ -61,3 +61,4 @@ You are an automation agent that generates and maintains a TypeScript SDK for th
 
 * If any generated file diverges from the spec, **regenerate** from `companycam-openapi-spec.yaml`.
 * If a requirement is not present in the spec, **omit it** and report the gap.
+

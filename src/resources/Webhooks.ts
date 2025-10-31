@@ -1,8 +1,7 @@
 import type {
-  CreateWebhookRequestBody,
   PaginationQueryParams,
-  UpdateWebhookRequestBody,
   Webhook,
+  WebhookMutable,
 } from "../interfaces.js";
 import type { HttpClient } from "../http/HttpClient.js";
 import {
@@ -43,20 +42,20 @@ export class WebhooksResource {
   /**
    * Create a webhook subscription.
    *
-   * @param body Payload describing the webhook to create.
+   * @param payload Mutable webhook attributes aligned with the spec.
    * @param options Optional request overrides such as alternate auth token or abort signal.
    * @returns The created {@link Webhook}.
    * @throws {APIError} When the API responds with an error status.
    */
   async create(
-    body: CreateWebhookRequestBody,
+    payload: WebhookMutable,
     options?: RequestOptions
   ): Promise<Webhook> {
     const response = await this.http.request<Webhook>({
       ...buildRequestConfig(options),
       method: "POST",
       url: "/webhooks",
-      data: body,
+      data: payload,
     });
 
     return response.data;
@@ -84,21 +83,21 @@ export class WebhooksResource {
    * Update a webhook registration.
    *
    * @param webhookId Identifier of the webhook to update.
-   * @param body Payload describing the updated webhook configuration.
+   * @param payload Mutable webhook attributes aligned with the spec.
    * @param options Optional request overrides such as alternate auth token or abort signal.
    * @returns The updated {@link Webhook}.
    * @throws {APIError} When the API responds with an error status.
    */
   async update(
     webhookId: string,
-    body: UpdateWebhookRequestBody,
+    payload: WebhookMutable,
     options?: RequestOptions
   ): Promise<Webhook> {
     const response = await this.http.request<Webhook>({
       ...buildRequestConfig(options),
       method: "PUT",
       url: `/webhooks/${encodePathParam(webhookId)}`,
-      data: body,
+      data: payload,
     });
 
     return response.data;

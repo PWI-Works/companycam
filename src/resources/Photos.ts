@@ -1,13 +1,9 @@
 import type {
   Comment,
-  CreatePhotoCommentRequestBody,
-  CreatePhotoTagsRequestBody,
   ListPhotosQueryParams,
   PaginationQueryParams,
   Photo,
   Tag,
-  UpdatePhotoDescriptionRequestBody,
-  UpdatePhotoRequestBody,
 } from "../interfaces.js";
 import type { HttpClient } from "../http/HttpClient.js";
 import {
@@ -78,21 +74,21 @@ export class PhotosResource {
    * Update a photo, typically toggling the internal flag.
    *
    * @param photoId Identifier of the photo to update.
-   * @param body Patch payload that follows the spec-defined structure.
+   * @param payload Mutable photo attributes forwarded to the API.
    * @param options Optional request overrides such as alternate auth token or abort signal.
    * @returns The updated {@link Photo}.
    * @throws {APIError} When the API responds with an error status.
    */
   async update(
     photoId: string,
-    body: UpdatePhotoRequestBody,
+    payload: { internal?: boolean },
     options?: RequestOptions
   ): Promise<Photo> {
     const response = await this.http.request<Photo>({
       ...buildRequestConfig(options),
       method: "PUT",
       url: `/photos/${encodePathParam(photoId)}`,
-      data: body,
+      data: { photo: payload },
     });
 
     return response.data;
@@ -148,21 +144,21 @@ export class PhotoTagsResource {
    * Create or assign tags to the photo using the spec-defined endpoint.
    *
    * @param photoId Identifier of the target photo.
-   * @param body Payload describing the tags to create or assign.
+   * @param tags Tags to create or assign, forwarded using the spec structure.
    * @param options Optional request overrides such as alternate auth token or abort signal.
    * @returns The created tag association payload returned by the API.
    * @throws {APIError} When the API responds with an error status.
    */
   async create(
     photoId: string,
-    body: CreatePhotoTagsRequestBody,
+    tags: string[],
     options?: RequestOptions
   ): Promise<Tag> {
     const response = await this.http.request<Tag>({
       ...buildRequestConfig(options),
       method: "POST",
       url: `/photos/${encodePathParam(photoId)}/tags`,
-      data: body,
+      data: { tags },
     });
 
     return response.data;
@@ -203,14 +199,14 @@ export class PhotoCommentsResource {
    * Create a comment on the photo.
    *
    * @param photoId Identifier of the photo to comment on.
-   * @param body Payload describing the comment text to create.
+   * @param content Comment text as required by the spec.
    * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
    * @returns The created {@link Comment}.
    * @throws {APIError} When the API responds with an error status.
    */
   async create(
     photoId: string,
-    body: CreatePhotoCommentRequestBody,
+    content: string,
     options?: UserScopedRequestOptions
   ): Promise<Comment> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);
@@ -219,7 +215,7 @@ export class PhotoCommentsResource {
       method: "POST",
       url: `/photos/${encodePathParam(photoId)}/comments`,
       headers: userContext ? { "X-CompanyCam-User": userContext } : undefined,
-      data: body,
+      data: { comment: { content } },
     });
 
     return response.data;
@@ -236,21 +232,21 @@ export class PhotoDescriptionsResource {
    * Update the description of a photo.
    *
    * @param photoId Identifier of the photo to update.
-   * @param body Payload providing the new description text.
+   * @param description Description text to store.
    * @param options Optional request overrides such as alternate auth token or abort signal.
    * @returns The updated {@link Photo}.
    * @throws {APIError} When the API responds with an error status.
    */
   async update(
     photoId: string,
-    body: UpdatePhotoDescriptionRequestBody,
+    description: string,
     options?: RequestOptions
   ): Promise<Photo> {
     const response = await this.http.request<Photo>({
       ...buildRequestConfig(options),
       method: "POST",
       url: `/photos/${encodePathParam(photoId)}/descriptions`,
-      data: body,
+      data: { description },
     });
 
     return response.data;

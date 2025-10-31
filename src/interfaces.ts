@@ -6,23 +6,53 @@
  * Representation of the company.
  */
 export interface Company {
+  /** The Company's unique ID */
   id: string;
+  /** The name of the company */
   name: string;
+  /** Indicates the status of the Company. */
   status?: "active" | "cancelled" | "deleted";
+  /** The address of the company */
   address?: Address;
+  /** A list of images for the different variants of the logo */
   logo?: Array<ImageURI>;
+}
+
+/**
+ * Fields accepted by the API when updating a user.
+ * Mirrors the mutable subset of the User schema.
+ */
+interface UserMutable {
+  first_name?: string;
+  last_name?: string;
+  email_address?: string;
+}
+
+/**
+ * Additional attributes permitted during user update requests.
+ */
+export interface UserUpdatePayload extends UserMutable {
+  password?: string;
+  phone_number?: string;
+}
+
+/**
+ * Additional attributes permitted during user creation requests.
+ */
+export interface UserCreatePayload extends UserUpdatePayload {
+  /** Role for the user. Allowed values: standard (default), restricted */
+  user_role?: "standard" | "restricted";
 }
 
 /**
  * Representation of the user.
  */
-export interface User {
+export interface User extends UserMutable {
   id: string;
   company_id?: string;
-  email_address?: string;
+  /** Indicates the status of the Company. */
   status?: "active" | "deleted";
-  first_name?: string;
-  last_name?: string;
+  /** A list of images for the different variants of the user profile image */
   profile_image?: Array<ImageURI>;
   phone_number?: string | null;
   created_at?: number;
@@ -31,96 +61,258 @@ export interface User {
 }
 
 /**
- * Representation of the project.
+ * Common fields shared accepted when creating or updating a project.
  */
-export interface Project {
-  id: string;
-  company_id?: string;
-  creator_id?: string;
-  creator_type?: string;
-  creator_name?: string;
-  status?: "active" | "deleted";
-  archived?: boolean;
-  name?: string | null;
+interface ProjectMutable {
   address?: Address;
   coordinates?: Coordinate;
-  featured_image?: Array<ImageURI>;
-  project_url?: string;
-  embedded_project_url?: string;
-  integrations?: Array<ProjectIntegration>;
-  slug?: string;
-  public?: boolean;
+  /** The Geofence latitude and longitude */
   geofence?: Array<Coordinate>;
+}
+
+/**
+ * Fields accepted when creating or updating a project.
+ */
+export interface ProjectUpdatePayload extends ProjectMutable {
+  /** The name of the project. Defaults to "Joe Smith" when creating a project. */
+  name?: string;
+}
+
+/**
+ * Additional attributes allowed when creating a project.
+ */
+export interface ProjectCreatePayload extends ProjectUpdatePayload {
+  primary_contact?: ProjectContactRequest;
+}
+
+/**
+ * Representation of the project.
+ */
+export interface Project extends ProjectMutable {
+  /** A unique identifier for the Project. */
+  id: string;
+  /** The title of the Project */
+  name?: string | null;
+  /** A unique identifier for the Company the Project belongs to */
+  company_id?: string;
+  /** The id of the entity that created the Project */
+  creator_id?: string;
+  /** The type of the entity that created the Project */
+  creator_type?: string;
+  /** The display name of the entity that created the Project */
+  creator_name?: string;
+  /** Indicates the status of the Project. */
+  status?: "active" | "deleted";
+  /** Indicates whether the Project is archived */
+  archived?: boolean;
+  /** A list of images for the different variants of the Project's feature image. */
+  featured_image?: Array<ImageURI>;
+  /** The URL to the Project in the web app */
+  project_url?: string;
+  /** The URL to an embeddable photo feed for the Project */
+  embedded_project_url?: string;
+  /** A list of integrations associated with the Project */
+  integrations?: Array<ProjectIntegration>;
+  /** A unique identifier for the Project that is used to construct some public URLs */
+  slug?: string;
+  /** Indicates whether the Project's timeline and other public features are enabled */
+  public?: boolean;
   primary_contact?: ProjectContactResponse;
+  /** Notes or description of the project */
   notepad?: string;
+  /** Timestamp when the Project was created */
   created_at?: number;
+  /** Timestamp when the Project was updated */
   updated_at?: number;
+}
+
+/**
+ * Common fields for project contacts.
+ */
+interface ProjectContactMutable {
+  /** The email of the contact */
+  email?: string;
+  /** The phone of the contact */
+  phone_number?: string;
+}
+
+/**
+ * Representation of the project contact request.
+ */
+export interface ProjectContactRequest extends ProjectContactMutable {
+  /** The name of the contact */
+  name: string;
+}
+
+/**
+ * Representation of the project contact response.
+ */
+export interface ProjectContactResponse extends ProjectContactMutable {
+  /** The unique ID of the project contact */
+  id?: string;
+  /** The unique ID of the project the contact is attached to */
+  project_id?: string;
+  /** The name of the contact */
+  name?: string;
+  /** Timestamp when the Project Contact was created on the server */
+  created_at?: number;
+  /** Timestamp when the Project Contact was last updated */
+  updated_at?: number;
+}
+
+/**
+ * Fields accepted when creating a photo.
+ */
+export interface PhotoMutable {
+  coordinates?: Coordinate;
+  uri: string;
+  /** Unix timestamp when the Photo was captured */
+  captured_at: number;
+  /** A description of the photo */
+  description?: string;
+  tags?: string[];
 }
 
 /**
  * Representation of the photo.
  */
 export interface Photo {
+  /** The unique ID for the photo */
   id: string;
+  /** A unique identifier for the Company the Photo belongs to */
   company_id?: string;
+  /** The id of the entity that created the Photo */
   creator_id?: string;
+  /** The type of the entity that created the Photo */
   creator_type?: string;
+  /** The display name of the entity that created the Photo */
   creator_name?: string;
+  /** The unique ID of the project the Photo was captured at */
   project_id?: string;
+  /** Indicates the Photo's processing status. */
   processing_status?:
     | "pending"
     | "processing"
     | "processed"
     | "processing_error"
     | "duplicate";
+  /** The coordinates where the Photo was captured */
   coordinates?: Array<Coordinate>;
+  /** A list of URIs for the different size variants of the photo. */
   uris?: Array<ImageURI>;
+  /** The MD5 hash of the photo */
   hash?: string;
+  /** A description of the photo */
   description?: string;
+  /** Indicates whether the photo is for internal use only and should not be used in marketing or other public materials */
   internal?: boolean;
+  /** The link to the photo in the web app */
   photo_url?: string;
+  /** Timestamp when the Photo was captured */
   captured_at?: number;
+  /** Timestamp when the photo was created on the server. This may differ from the captured_at field */
   created_at?: number;
+  /** Timestamp when the photo was last updated */
   updated_at?: number;
+}
+
+/**
+ * Fields accepted when creating or updating a tag.
+ */
+export interface TagMutable {
+  /** The display value of the Tag. Used to display to the user */
+  display_value?: string;
 }
 
 /**
  * Representation of the tag.
  */
-export interface Tag {
+export interface Tag extends TagMutable {
+  /** A unique ID for the Tag. */
   id: string;
+  /** A unique ID for the Company the Tag belongs to */
   company_id?: string;
-  display_value?: string;
+  /** The lowercase version of the display_value. This is useful for searching and sorting */
   value?: string;
+  /** Timestamp when the Tag was created on the server */
   created_at?: number;
+  /** Timestamp when the Tag was last updated */
   updated_at?: number;
+}
+
+/**
+ * Representation of the checklist template.
+ */
+export interface ChecklistTemplate {
+  /** The unique ID for the ChecklistTemplate */
+  id?: string;
+  /** A unique identifier for the Company the ChecklistTemplate belongs to */
+  company_id?: string;
+  /** The name for the ChecklistTemplate */
+  name?: string;
+  /** The description for the ChecklistTemplate */
+  description?: string;
+  /** Timestamp when the ChecklistTemplate was created on the server. */
+  created_at?: number;
+  /** Timestamp when the ChecklistTemplate was last updated */
+  updated_at?: number;
+}
+
+/**
+ * Fields accepted when creating or updating a group.
+ */
+export interface GroupMutable {
+  /** The title of the Group */
+  name?: string;
+  /** A list of the group's users */
+  users?: Array<string>;
 }
 
 /**
  * Representation of the group.
  */
-export interface Group {
+export interface Group extends Omit<GroupMutable, "users"> {
+  /** A unique ID for the Group. */
   id: string;
+  /** A unique ID for the Company the Group belongs to */
   company_id?: string;
-  name?: string;
+  /** A list of the group's users */
   users?: Array<User>;
+  /** Indicates the status of the Group */
   status?: "active" | "deleted";
+  /** The link to the group in the web app */
   group_url?: string;
+  /** Timestamp when the Group was created on the server */
   created_at?: number;
+  /** Timestamp when the Group was last updated */
   updated_at?: number;
+}
+
+/**
+ * Fields accepted when creating or updating a webhook.
+ */
+export interface WebhookMutable {
+  /** The URL of the webhook, which will receive requests with data for any events fired that fall within the scopes of the Webhook. */
+  url?: string;
+  /** A list of scopes covering events the Webhook is subscribed to. */
+  scopes?: Array<string>;
+  /** Whether or not the Webhook is enabled/active. */
+  enabled?: boolean;
+  /** A string used to hash the webhook body for verification. */
+  token?: string;
 }
 
 /**
  * Representation of the webhook.
  */
-export interface Webhook {
+export interface Webhook extends WebhookMutable {
+  /** A unique ID for the Webhook. */
   id: string;
+  /** A unique ID for the Company the Webhook belongs to */
   company_id?: string;
-  url?: string;
-  scopes?: Array<string>;
-  token?: string;
-  enabled?: boolean;
+  /** Timestamp when the Webhook was created on the server */
   created_at?: number;
+  /** Timestamp when the Webhook was last updated */
   updated_at?: number;
 }
 
@@ -167,17 +359,29 @@ export interface UserContextHeaderParams {
  * Representation of the checklist.
  */
 export interface Checklist {
+  /** The unique ID for the Checklist */
   id?: string;
+  /** A unique identifier for the Company the Checklist belongs to */
   company_id?: string;
+  /** A unique identifier for the Project the Checklist belongs to */
   project_id?: string;
+  /** The name for the Checklist */
   name?: string;
+  /** Timestamp when the Checklist was created on the server. */
   created_at?: number;
+  /** Timestamp when the Checklist was last updated */
   updated_at?: number;
+  /** Timestamp when the Checklist was completed */
   completed_at?: number | null;
+  /** A unique identifier for the creator of the Checklist */
   creator_id?: string;
+  /** A unique identifier for the template used to create the Checklist */
   checklist_template_id?: string | null;
+  /** Flag indicating whether the Checklist is still being created or not */
   is_populating?: boolean;
+  /** A collection of tasks that are not associated with a section */
   sectionless_tasks?: Array<Task>;
+  /** A collection of sections */
   sections?: Array<ChecklistSection>;
 }
 
@@ -185,13 +389,21 @@ export interface Checklist {
  * Representation of the checklist section.
  */
 export interface ChecklistSection {
+  /** The unique ID for the ChecklistSection */
   id?: string;
+  /** A unique identifier for the Checklist the ChecklistSection belongs to */
   todo_list_id?: string;
+  /** A unique identifier of the creator of the ChecklistSection */
   creator_id?: string;
+  /** The type of the creator of the ChecklistSection */
   creator_type?: string;
+  /** The name of the creator of the ChecklistSection */
   creator_name?: string;
+  /** The title of the ChecklistSection */
   title?: string;
+  /** The position for the ChecklistSection within the Checklist */
   position?: number;
+  /** A collection of tasks associated to a ChecklistSection */
   tasks?: Array<Task>;
 }
 
@@ -199,21 +411,37 @@ export interface ChecklistSection {
  * Representation of the task.
  */
 export interface Task {
+  /** The unique ID for the Task */
   id?: string;
+  /** Timestamp when the Task was marked completed. */
   completed_at?: number;
+  /** The unique ID for entity that completed the Task */
   completed_by_id?: string;
+  /** The type of the entity that marked the Task as completed */
   completed_by_type?: string;
+  /** Timestamp when the Task was created on the server. */
   created_at?: number;
+  /** A unique identifier of the creator of the Task */
   creator_id?: string;
+  /** The type of the creator of the Task */
   creator_type?: string;
+  /** The details of a Task */
   details?: string;
+  /** Flag indicating whether a photo is required to complete the Task */
   photo_capture_required?: boolean;
+  /** The position for the Task within its ChecklistSection or Checklist */
   position?: number;
+  /** A unique identifier for the Checklist the Task belongs to */
   todo_list_id?: string;
+  /** A unique identifier for the ChecklistSection the Task belongs to */
   todo_list_section_id?: string | null;
+  /** The title of the Task */
   title?: string;
+  /** Timestamp when the Checklist was last updated on the server. */
   updated_at?: number;
+  /** A collection of sub-tasks associated to a Task */
   sub_tasks?: Array<SubTask>;
+  /** A collection of photos associated to a Task */
   photos?: Array<Photo>;
 }
 
@@ -221,26 +449,22 @@ export interface Task {
  * Representation of the sub task.
  */
 export interface SubTask {
+  /** The unique ID for the Task */
   id?: string;
+  /** The title of the Task */
   label?: string;
+  /** The type of answer expected for the SubTask */
   answer_type?: "open_text" | "multiple_choice" | "yes_no";
+  /** The index from the answer_options array that were selected as answers */
   answer_choices?: Array<unknown>;
+  /** A collection of answer options for the SubTask */
   answer_options?: Array<string>;
+  /** The position for the SubTask within its Task */
   position?: number;
+  /** A unique identifier for the Task the SubTask belongs to */
   task_id?: string;
+  /** The answer text for the SubTask when the type is open_text */
   answer_text?: string;
-}
-
-/**
- * Representation of the checklist template.
- */
-export interface ChecklistTemplate {
-  id?: string;
-  company_id?: string;
-  name?: string;
-  description?: string;
-  created_at?: number;
-  updated_at?: number;
 }
 
 /**
@@ -263,15 +487,25 @@ export interface ProjectIntegration {
  * Representation of the comment.
  */
 export interface Comment {
+  /** The unique ID of the comment */
   id: string;
+  /** The id of the entity that created the Comment */
   creator_id?: string;
+  /** The type of the entity that created the Comment */
   creator_type?: string;
+  /** The display name of the entity that created the Comment */
   creator_name?: string;
+  /** The unique ID of the entity that the comment was applied to */
   commentable_id?: string;
+  /** The type of the entity that the comment was applied to. */
   commentable_type?: string;
+  /** This should always be active */
   status?: string;
+  /** The contents of the comment. This may contain whitespace characters such as newlines. */
   content?: string;
+  /** Timestamp when the Comment was created on the server */
   created_at?: number;
+  /** Timestamp when the Comment was last updated */
   updated_at?: number;
 }
 
@@ -279,29 +513,27 @@ export interface Comment {
  * Representation of the document.
  */
 export interface Document {
+  /** The unique ID of the document */
   id: string;
+  /** The unique ID of the entity that created the document */
   creator_id?: string;
+  /** The type of the entity that created the document */
   creator_type?: string;
+  /** The unique ID of the company that owns the document */
   creator_name?: string;
+  /** The unique ID of the project the document is attached to */
   project_id?: string;
+  /** the filename of the document */
   name?: string;
+  /** The URL where the document can be downloaded/viewed from */
   url?: string;
+  /** The content type of the document. (e.g. application/pdf) */
   content_type?: string;
+  /** The size of the document in bytes. */
   byte_size?: number;
+  /** Timestamp when the Document was created on the server */
   created_at?: number;
-  updated_at?: number;
-}
-
-/**
- * Representation of the project contact response.
- */
-export interface ProjectContactResponse {
-  id?: string;
-  project_id?: string;
-  name?: string;
-  email?: string;
-  phone_number?: string;
-  created_at?: number;
+  /** Timestamp when the Document was last updated */
   updated_at?: number;
 }
 
@@ -313,31 +545,34 @@ export interface Error {
 }
 
 /**
- * Representation of the project contact request.
+ * Fields accepted when updating the project notepad.
  */
-export interface ProjectContactRequest {
-  name: string;
-  email?: string;
-  phone_number?: string;
+export interface ProjectNotepadMutable {
+  notepad: string;
 }
 
 /**
  * Representation of the project notepad.
  */
-export interface ProjectNotepad {
-  notepad: string;
-}
+export interface ProjectNotepad extends ProjectNotepadMutable {}
 
 /**
  * Representation of the project collaborator.
  */
 export interface ProjectCollaborator {
+  /** The unique ID of the collaborator */
   id?: string;
+  /** The unique ID of the collaborating company */
   company_id?: string;
+  /** The unique ID of the project the collaborator is a part of */
   project_id?: string;
+  /** The unique ID of the invitation for the collaboration */
   project_invitation_id?: string;
+  /** Timestamp when the project collaboration was accepted */
   accepted_at?: number;
+  /** Timestamp when the project collaboration was created on the server */
   created_at?: number;
+  /** Timestamp when the project collaboration was last updated */
   updated_at?: number;
 }
 
@@ -345,15 +580,25 @@ export interface ProjectCollaborator {
  * Representation of the project invitation.
  */
 export interface ProjectInvitation {
+  /** The unique ID of invitation */
   id?: string;
+  /** The unique ID of the project */
   project_id?: string;
+  /** The invite url to accept the invitation */
   invite_url?: string;
+  /** The status of the invitation. It will be one of `accepted`, `expired`, or `pending` */
   status?: "accepted" | "expired" | "pending";
+  /** Timestamp when the project invitation was accepted */
   accepted_at?: number;
+  /** The unique ID of the company who accepted the invitation */
   accepted_by_id?: string;
+  /** Timestamp when the project invitation expires */
   expires_at?: number;
+  /** The unique ID of the user who created the invitation */
   creator_id?: string;
+  /** Timestamp when the project invitation was created on the server */
   created_at?: number;
+  /** Timestamp when the project invitation was last updated */
   updated_at?: number;
 }
 
@@ -367,222 +612,43 @@ export interface ListChecklistsQueryParams extends PaginationQueryParams {
 }
 
 /**
- * Request body payload for the create user operation.
- */
-export interface CreateUserRequestBody {
-  user?: {
-    first_name?: string;
-    last_name?: string;
-    email_address?: string;
-    phone_number?: string;
-    password?: string;
-    user_role?: string;
-  };
-}
-
-/**
- * Request body payload for the update user operation.
- */
-export interface UpdateUserRequestBody {
-  first_name?: string;
-  last_name?: string;
-  email_address?: string;
-  phone_number?: string;
-  password?: string;
-}
-
-/**
  * Query parameters accepted by the list projects q operation.
  */
 export interface ListProjectsQueryParams extends PaginationQueryParams {
+  /** An optional value to filter the projects by name or address line 1 */
   query?: string;
+  /** An ISO8601 formatted date and time to return projects modified on or after the provided value */
   modified_since?: string;
-}
-
-/**
- * Request body payload for the create project operation.
- */
-export interface CreateProjectRequestBody {
-  name?: string;
-  address?: Address;
-  coordinates?: Coordinate;
-  geofence?: Array<Coordinate>;
-  primary_contact?: ProjectContactRequest;
-}
-
-/**
- * Request body payload for the update project operation.
- */
-export interface UpdateProjectRequestBody {
-  name?: string;
-  address?: Address;
-  coordinates?: Coordinate;
-  geofence?: Array<Coordinate>;
 }
 
 /**
  * Query parameters accepted by the list project photos q operation.
  */
 export interface ListProjectPhotosQueryParams extends PaginationQueryParams {
+  /** A unix timestamp to return photos modified on or after the provided value */
   start_date?: string;
+  /** A unix timestamp to return photos modified on or before the provided value */
   end_date?: string;
+  /** Filter results to include photos captured by one of these user IDs */
   user_ids?: Array<number>;
+  /** Filter results to include photos captured by one of these group IDs */
   group_ids?: Array<number>;
+  /** Filter results to include photos captured by one of these tag IDs */
   tag_ids?: Array<number>;
-}
-
-/**
- * Request body payload for the create project photo operation.
- */
-export interface CreateProjectPhotoRequestBody {
-  photo: {
-    coordinates?: Coordinate;
-    uri: string;
-    captured_at: number;
-    description?: string;
-    tags?: Array<string>;
-  };
-}
-
-/**
- * Request body payload for the update project notepad operation.
- */
-export interface UpdateProjectNotepadRequestBody {
-  notepad: string;
-}
-
-/**
- * Request body payload for the create project labels operation.
- */
-export interface CreateProjectLabelsRequestBody {
-  project?: {
-    labels?: Array<string>;
-  };
-}
-
-/**
- * Request body payload for the create project document operation.
- */
-export interface CreateProjectDocumentRequestBody {
-  document?: {
-    name?: string;
-    attachment?: string;
-  };
-}
-
-/**
- * Request body payload for the create project comment operation.
- */
-export interface CreateProjectCommentRequestBody {
-  comment?: {
-    content?: string;
-  };
-}
-
-/**
- * Request body payload for the create project checklist operation.
- */
-export interface CreateProjectChecklistRequestBody {
-  checklist_template_id?: string;
 }
 
 /**
  * Query parameters accepted by the list photos q operation.
  */
 export interface ListPhotosQueryParams extends PaginationQueryParams {
+  /** A unix timestamp to return photos modified on or after the provided value */
   start_date?: string;
+  /** A unix timestamp to return photos modified on or before the provided value */
   end_date?: string;
+  /** Filter results to include photos captured by one of these user IDs */
   user_ids?: Array<number>;
+  /** Filter results to include photos captured by one of these group IDs */
   group_ids?: Array<number>;
+  /** Filter results to include photos captured by one of these tag IDs */
   tag_ids?: Array<number>;
-}
-
-/**
- * Request body payload for the update photo operation.
- */
-export interface UpdatePhotoRequestBody {
-  photo?: {
-    internal?: boolean;
-  };
-}
-
-/**
- * Request body payload for the create photo tags operation.
- */
-export interface CreatePhotoTagsRequestBody {
-  tags?: Array<string>;
-}
-
-/**
- * Request body payload for the create photo comment operation.
- */
-export interface CreatePhotoCommentRequestBody {
-  comment?: {
-    content?: string;
-  };
-}
-
-/**
- * Request body payload for the update photo description operation.
- */
-export interface UpdatePhotoDescriptionRequestBody {
-  description?: string;
-}
-
-/**
- * Request body payload for the create tag operation.
- */
-export interface CreateTagRequestBody {
-  tag?: {
-    display_value?: string;
-  };
-}
-
-/**
- * Request body payload for the update tag operation.
- */
-export interface UpdateTagRequestBody {
-  tag?: {
-    display_value?: string;
-  };
-}
-
-/**
- * Request body payload for the create group operation.
- */
-export interface CreateGroupRequestBody {
-  group?: {
-    name?: string;
-    users?: Array<string>;
-  };
-}
-
-/**
- * Request body payload for the update group operation.
- */
-export interface UpdateGroupRequestBody {
-  group?: {
-    name?: string;
-    users?: Array<string>;
-  };
-}
-
-/**
- * Request body payload for the create webhook operation.
- */
-export interface CreateWebhookRequestBody {
-  url?: string;
-  scopes?: Array<string>;
-  enabled?: boolean;
-  token?: string;
-}
-
-/**
- * Request body payload for the update webhook operation.
- */
-export interface UpdateWebhookRequestBody {
-  url?: string;
-  scopes?: Array<string>;
-  enabled?: boolean;
-  token?: string;
 }

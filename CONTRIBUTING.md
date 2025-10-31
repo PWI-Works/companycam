@@ -22,14 +22,14 @@ We are excited to have you collaborate on the CompanyCam TypeScript SDK. This do
 We follow [Semantic Versioning](https://semver.org/) and automate releases with [semantic-release](https://semantic-release.gitbook.io/semantic-release/). To keep the automation happy and ensure a smooth release process:
 
 - **Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)** in every pull request so semantic-release can determine the correct version bump.
-- **Do not edit [`CHANGELOG.md`](CHANGELOG.md) or the package version manually**—the release workflow updates them after each merge to `main`.
+- **Do not edit [`CHANGELOG.md`](CHANGELOG.md) or the package version manually** - the release workflow updates them after each merge to `main`.
 - **Merges to `main` with Conventional Commit messages trigger the release pipeline to:**
   - determine the next version number;
   - publish the package to npm;
   - generate release notes and update [`CHANGELOG.md`](CHANGELOG.md);
   - create a GitHub release and tag.
 
-No manual version bumps or changelog edits are required—just keep commit messages compliant with the Conventional Commits specification.
+No manual version bumps or changelog edits are required - just keep commit messages compliant with the Conventional Commits specification.
 
 ### Conventional Commit message guidelines
 

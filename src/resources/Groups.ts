@@ -1,9 +1,4 @@
-import type {
-  CreateGroupRequestBody,
-  Group,
-  PaginationQueryParams,
-  UpdateGroupRequestBody,
-} from "../interfaces.js";
+import type { Group, GroupMutable, PaginationQueryParams } from "../interfaces.js";
 import type { HttpClient } from "../http/HttpClient.js";
 import {
   buildRequestConfig,
@@ -46,13 +41,13 @@ export class GroupsResource {
   /**
    * Create a new group.
    *
-   * @param body Payload following the spec-defined structure for group creation.
+   * @param payload Mutable group attributes drawn from the spec.
    * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
    * @returns The newly created {@link Group}.
    * @throws {APIError} When the API responds with an error status.
-   */
+  */
   async create(
-    body: CreateGroupRequestBody,
+    payload: GroupMutable,
     options?: UserScopedRequestOptions
   ): Promise<Group> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);
@@ -61,7 +56,7 @@ export class GroupsResource {
       method: "POST",
       url: "/groups",
       headers: userContext ? { "X-CompanyCam-User": userContext } : undefined,
-      data: body,
+      data: { group: payload },
     });
 
     return response.data;
@@ -89,21 +84,21 @@ export class GroupsResource {
    * Update an existing group.
    *
    * @param groupId Identifier of the group to update.
-   * @param body Patch payload that follows the spec-defined structure.
+   * @param payload Mutable group attributes drawn from the spec.
    * @param options Optional request overrides such as alternate auth token or abort signal.
    * @returns The updated {@link Group}.
    * @throws {APIError} When the API responds with an error status.
    */
   async update(
     groupId: string,
-    body: UpdateGroupRequestBody,
+    payload: GroupMutable,
     options?: RequestOptions
   ): Promise<Group> {
     const response = await this.http.request<Group>({
       ...buildRequestConfig(options),
       method: "PUT",
       url: `/groups/${encodePathParam(groupId)}`,
-      data: body,
+      data: { group: payload },
     });
 
     return response.data;

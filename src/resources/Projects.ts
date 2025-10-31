@@ -1,12 +1,6 @@
 import type {
   Checklist,
   Comment,
-  CreateProjectChecklistRequestBody,
-  CreateProjectCommentRequestBody,
-  CreateProjectDocumentRequestBody,
-  CreateProjectLabelsRequestBody,
-  CreateProjectPhotoRequestBody,
-  CreateProjectRequestBody,
   Document,
   ListProjectPhotosQueryParams,
   ListProjectsQueryParams,
@@ -14,12 +8,14 @@ import type {
   Photo,
   Project,
   ProjectCollaborator,
+  ProjectCreatePayload,
+  ProjectUpdatePayload,
   ProjectInvitation,
   ProjectNotepad,
+  ProjectNotepadMutable,
   Tag,
-  UpdateProjectNotepadRequestBody,
-  UpdateProjectRequestBody,
   User,
+  PhotoMutable,
 } from "../interfaces.js";
 import type { HttpClient } from "../http/HttpClient.js";
 import {
@@ -84,13 +80,13 @@ export class ProjectsResource {
   /**
    * Create a new project.
    *
-   * @param body Payload defining the project attributes, matching the spec schema.
+   * @param project Mutable attributes comprising the project creation payload.
    * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
    * @returns The newly created {@link Project}.
    * @throws {APIError} When the API responds with an error status.
    */
   async create(
-    body: CreateProjectRequestBody,
+    project: ProjectCreatePayload,
     options?: UserScopedRequestOptions
   ): Promise<Project> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);
@@ -99,7 +95,7 @@ export class ProjectsResource {
       method: "POST",
       url: "/projects",
       headers: userContext ? { "X-CompanyCam-User": userContext } : undefined,
-      data: body,
+      data: project,
     });
 
     return response.data;
@@ -113,7 +109,10 @@ export class ProjectsResource {
    * @returns The requested {@link Project}.
    * @throws {APIError} When the API responds with an error status.
    */
-  async retrieve(projectId: string, options?: RequestOptions): Promise<Project> {
+  async retrieve(
+    projectId: string,
+    options?: RequestOptions
+  ): Promise<Project> {
     const response = await this.http.request<Project>({
       ...buildRequestConfig(options),
       method: "GET",
@@ -127,21 +126,21 @@ export class ProjectsResource {
    * Update the core attributes of a project.
    *
    * @param projectId Identifier of the project to update.
-   * @param body Payload describing the replacement project attributes.
+   * @param updates Attributes describing the replacement project state.
    * @param options Optional request overrides such as alternate auth token or abort signal.
    * @returns The updated {@link Project}.
    * @throws {APIError} When the API responds with an error status.
    */
   async update(
     projectId: string,
-    body: UpdateProjectRequestBody,
+    updates: ProjectUpdatePayload,
     options?: RequestOptions
   ): Promise<Project> {
     const response = await this.http.request<Project>({
       ...buildRequestConfig(options),
       method: "PUT",
       url: `/projects/${encodePathParam(projectId)}`,
-      data: body,
+      data: updates,
     });
 
     return response.data;
@@ -235,14 +234,14 @@ export class ProjectPhotosResource {
    * Upload a new project photo via URI payload.
    *
    * @param projectId Identifier of the project that owns the photo.
-   * @param body Payload describing the image to upload, matching the spec schema.
+   * @param photo Photo metadata matching the spec-defined payload.
    * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
    * @returns The created {@link Photo}.
    * @throws {APIError} When the API responds with an error status.
    */
   async create(
     projectId: string,
-    body: CreateProjectPhotoRequestBody,
+    photo: PhotoMutable,
     options?: UserScopedRequestOptions
   ): Promise<Photo> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);
@@ -251,7 +250,7 @@ export class ProjectPhotosResource {
       method: "POST",
       url: `/projects/${encodePathParam(projectId)}/photos`,
       headers: userContext ? { "X-CompanyCam-User": userContext } : undefined,
-      data: body,
+      data: { photo },
     });
 
     return response.data;
@@ -306,7 +305,9 @@ export class ProjectAssigneesResource {
     const response = await this.http.request<User>({
       ...buildRequestConfig(requestOptions),
       method: "PUT",
-      url: `/projects/${encodePathParam(projectId)}/assigned_users/${encodePathParam(userId)}`,
+      url: `/projects/${encodePathParam(
+        projectId
+      )}/assigned_users/${encodePathParam(userId)}`,
       headers: userContext ? { "X-CompanyCam-User": userContext } : undefined,
     });
 
@@ -331,7 +332,9 @@ export class ProjectAssigneesResource {
     await this.http.request<void>({
       ...buildRequestConfig(requestOptions),
       method: "DELETE",
-      url: `/projects/${encodePathParam(projectId)}/assigned_users/${encodePathParam(userId)}`,
+      url: `/projects/${encodePathParam(
+        projectId
+      )}/assigned_users/${encodePathParam(userId)}`,
       headers: userContext ? { "X-CompanyCam-User": userContext } : undefined,
     });
   }
@@ -347,21 +350,21 @@ export class ProjectNotepadResource {
    * Update the notepad content for a project.
    *
    * @param projectId Identifier of the project whose notepad should be updated.
-   * @param body Payload containing the new notepad content.
+   * @param payload New notepad content pulled directly from the spec.
    * @param options Optional request overrides such as alternate auth token or abort signal.
    * @returns The updated {@link ProjectNotepad}.
    * @throws {APIError} When the API responds with an error status.
    */
   async update(
     projectId: string,
-    body: UpdateProjectNotepadRequestBody,
+    payload: ProjectNotepadMutable,
     options?: RequestOptions
   ): Promise<ProjectNotepad> {
     const response = await this.http.request<ProjectNotepad>({
       ...buildRequestConfig(options),
       method: "PUT",
       url: `/projects/${encodePathParam(projectId)}/notepad`,
-      data: body,
+      data: payload,
     });
 
     return response.data;
@@ -487,21 +490,21 @@ export class ProjectLabelsResource {
    * Apply new labels to the project.
    *
    * @param projectId Identifier of the project to update.
-   * @param body Payload listing the labels to assign.
+   * @param labels Labels to associate with the project, matching the spec schema.
    * @param options Optional request overrides such as alternate auth token or abort signal.
    * @returns The {@link Tag} response returned by the API.
    * @throws {APIError} When the API responds with an error status.
    */
   async create(
     projectId: string,
-    body: CreateProjectLabelsRequestBody,
+    labels: string[],
     options?: RequestOptions
   ): Promise<Tag> {
     const response = await this.http.request<Tag>({
       ...buildRequestConfig(options),
       method: "POST",
       url: `/projects/${encodePathParam(projectId)}/labels`,
-      data: body,
+      data: { project: { labels } },
     });
 
     return response.data;
@@ -524,7 +527,9 @@ export class ProjectLabelsResource {
     await this.http.request<void>({
       ...buildRequestConfig(options),
       method: "DELETE",
-      url: `/projects/${encodePathParam(projectId)}/labels/${encodePathParam(labelId)}`,
+      url: `/projects/${encodePathParam(projectId)}/labels/${encodePathParam(
+        labelId
+      )}`,
     });
   }
 }
@@ -563,14 +568,17 @@ export class ProjectDocumentsResource {
    * Upload a new document to the project.
    *
    * @param projectId Identifier of the project that owns the document.
-   * @param body Payload containing the document metadata and attachment.
+   * @param document Document payload providing metadata and attachment.
    * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
    * @returns The created {@link Document}.
    * @throws {APIError} When the API responds with an error status.
    */
   async create(
     projectId: string,
-    body: CreateProjectDocumentRequestBody,
+    document: {
+      name?: Document["name"];
+      attachment?: string;
+    },
     options?: UserScopedRequestOptions
   ): Promise<Document> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);
@@ -579,7 +587,7 @@ export class ProjectDocumentsResource {
       method: "POST",
       url: `/projects/${encodePathParam(projectId)}/documents`,
       headers: userContext ? { "X-CompanyCam-User": userContext } : undefined,
-      data: body,
+      data: { document },
     });
 
     return response.data;
@@ -620,14 +628,14 @@ export class ProjectCommentsResource {
    * Add a comment to the project discussion.
    *
    * @param projectId Identifier of the project to update.
-   * @param body Payload describing the comment content.
+   * @param content Comment body text to submit.
    * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
    * @returns The created {@link Comment}.
    * @throws {APIError} When the API responds with an error status.
    */
   async create(
     projectId: string,
-    body: CreateProjectCommentRequestBody,
+    content: string,
     options?: UserScopedRequestOptions
   ): Promise<Comment> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);
@@ -636,7 +644,7 @@ export class ProjectCommentsResource {
       method: "POST",
       url: `/projects/${encodePathParam(projectId)}/comments`,
       headers: userContext ? { "X-CompanyCam-User": userContext } : undefined,
-      data: body,
+      data: { comment: { content } },
     });
 
     return response.data;
@@ -674,23 +682,27 @@ export class ProjectChecklistsResource {
    * Create a checklist on the project, optionally from a template.
    *
    * @param projectId Identifier of the project to update.
-   * @param body Payload indicating the template selection or checklist details.
+   * @param checklistTemplateId Optional template identifier drawn from the spec.
    * @param options Optional request overrides; supply `X-CompanyCam-User` to attribute the action.
    * @returns The created {@link Checklist}.
    * @throws {APIError} When the API responds with an error status.
    */
   async create(
     projectId: string,
-    body: CreateProjectChecklistRequestBody,
+    checklistTemplateId?: string,
     options?: UserScopedRequestOptions
   ): Promise<Checklist> {
     const { requestOptions, userContext } = splitUserScopedOptions(options);
+    const data =
+      checklistTemplateId !== undefined
+        ? { checklist_template_id: checklistTemplateId }
+        : {};
     const response = await this.http.request<Checklist>({
       ...buildRequestConfig(requestOptions),
       method: "POST",
       url: `/projects/${encodePathParam(projectId)}/checklists`,
       headers: userContext ? { "X-CompanyCam-User": userContext } : undefined,
-      data: body,
+      data,
     });
 
     return response.data;
@@ -713,7 +725,9 @@ export class ProjectChecklistsResource {
     const response = await this.http.request<Checklist>({
       ...buildRequestConfig(options),
       method: "GET",
-      url: `/projects/${encodePathParam(projectId)}/checklists/${encodePathParam(checklistId)}`,
+      url: `/projects/${encodePathParam(
+        projectId
+      )}/checklists/${encodePathParam(checklistId)}`,
     });
 
     return response.data;
