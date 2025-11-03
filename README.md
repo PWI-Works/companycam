@@ -77,43 +77,6 @@ In addition, some `get` functions that support custom queries use our own `...Qu
 
 The best way to understand any of these interfaces is to use your IDE's inspect tool on the function. This ensures you're seeing and working with the version you have currently installed in your repository.
 
-### Example: Using Pagination
-
-The CompanyCam API documentation is not clear on when pagination is needed, but it does have a good pagination mechanism built in. Here is an example of using pagination to get all users in batches of 50. We chose 50 as a "safe" number - the actual limits may be higher.
-
-```ts
-import { createClient, User, PaginationQueryParams } from "companycam";
-
-// We always create a client first. Ideally we create one that is shared
-// across the client code to avoid having to repeat ourselves over and over.
-const client = createClient({
-  authToken: "your access token",
-});
-
-// define the pagination limit
-const perPage = 50;
-// create an empty array to store all users found
-const allUsers: User[] = [];
-
-// Fetch each page until the API returns fewer records than requested.
-for (let page = 1; ; page += 1) {
-  // set up the pagination using a ...QueryParams interface
-  const query: PaginationQueryParams = { page, per_page: perPage };
-  // fetch the users
-  const usersFromQuery = await client.users.list(query);
-
-  allUsers.push(...usersFromQuery);
-
-  // When the most recent page has fewer users than the limit, we can
-  // assume we're at the end of the list.
-  // If that's the case, we break the loop.
-  if (usersFromQuery.length < perPage) {
-    break;
-  }
-}
-
-console.log(`Fetched ${allUsers.length} users`);
-```
 
 ### Example: Using a ...CreatePayload interface to add a User
 
@@ -183,6 +146,42 @@ You can catch `APIError` to branch on status, surface structured messages, or re
 ## Pagination
 
 Every list endpoint in the specification inherits `PaginationQueryParams`, exposing `page` and `per_page` query parameters. Responses return plain arrays; continue pagination by incrementing `page` until the API returns fewer items than requested. Because the spec does not define cursor fields or pagination metadata, the SDK does not infer any additional pagination helpers beyond these query parameters.
+
+Example showing getting all users with 50 users per page.
+
+```ts
+import { createClient, User, PaginationQueryParams } from "companycam";
+
+// We always create a client first. Ideally we create one that is shared
+// across the client code to avoid having to repeat ourselves over and over.
+const client = createClient({
+  authToken: "your access token",
+});
+
+// define the pagination limit
+const perPage = 50;
+// create an empty array to store all users found
+const allUsers: User[] = [];
+
+// Fetch each page until the API returns fewer records than requested.
+for (let page = 1; ; page += 1) {
+  // set up the pagination using a ...QueryParams interface
+  const query: PaginationQueryParams = { page, per_page: perPage };
+  // fetch the users
+  const usersFromQuery = await client.users.list(query);
+
+  allUsers.push(...usersFromQuery);
+
+  // When the most recent page has fewer users than the limit, we can
+  // assume we're at the end of the list.
+  // If that's the case, we break the loop.
+  if (usersFromQuery.length < perPage) {
+    break;
+  }
+}
+
+console.log(`Fetched ${allUsers.length} users`);
+```
 
 ## Spec-Driven Promise
 
