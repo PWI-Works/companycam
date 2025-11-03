@@ -1,3 +1,11 @@
+# [1.2.0](https://github.com/PWI-Works/companycam/compare/v1.1.1...v1.2.0) (2025-11-03)
+
+
+### Features
+
+* implement oAuth endpoints as well ([e62eb3b](https://github.com/PWI-Works/companycam/commit/e62eb3bba968123d694aad11d6565577c140b488))
+* move Base client URL into a named constant ([4788440](https://github.com/PWI-Works/companycam/commit/4788440d2e48d66897fcea98aff2766d7514bb9b))
+
 ## [1.1.1](https://github.com/PWI-Works/companycam/compare/v1.1.0...v1.1.1) (2025-10-31)
 
 
