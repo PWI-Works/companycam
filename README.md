@@ -169,6 +169,7 @@ for (let page = 1; ; page += 1) {
   // fetch the users
   const usersFromQuery = await client.users.list(query);
 
+  // add all fetched users to the running list
   allUsers.push(...usersFromQuery);
 
   // When the most recent page has fewer users than the limit, we can
