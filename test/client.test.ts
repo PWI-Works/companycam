@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createClient } from "../src/client.js";
+import { BASE_CLIENT_URL, createClient } from "../src/client.js";
 import { HttpClient } from "../src/http/HttpClient.js";
 import { ChecklistsResource } from "../src/resources/Checklists.js";
 import { CompanyResource } from "../src/resources/Company.js";
@@ -32,5 +32,21 @@ describe("createClient", () => {
     const disposeSpy = vi.spyOn(client.http, "dispose");
     client.dispose();
     expect(disposeSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("defaults the HttpClient base URL to the spec-defined endpoint", () => {
+    const client = createClient();
+
+    // Accessing the axios instance allows us to inspect the derived base URL.
+    const axiosInstance = (client.http as unknown as { axiosInstance: { defaults: { baseURL?: string } } }).axiosInstance;
+    expect(axiosInstance.defaults.baseURL).toBe(BASE_CLIENT_URL);
+  });
+
+  it("allows overriding the base URL when provided", () => {
+    const customBaseURL = "https://example.com/custom";
+    const client = createClient({ baseURL: customBaseURL });
+
+    const axiosInstance = (client.http as unknown as { axiosInstance: { defaults: { baseURL?: string } } }).axiosInstance;
+    expect(axiosInstance.defaults.baseURL).toBe(customBaseURL);
   });
 });
