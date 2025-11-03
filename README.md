@@ -182,7 +182,7 @@ for (let page = 1; ; page += 1) {
 console.log(`Fetched ${allUsers.length} users`);
 ```
 
-## Spec-Driven Promise
+## Spec-Driven Approach
 
 We do everything we can to implement the entire [OpenAPI spec made public by CompanyCam](https://github.com/CompanyCam/openapi-spec).
 
