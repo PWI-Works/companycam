@@ -47,16 +47,15 @@ Start by instantiating a client - everything else flows from that shared entry p
 ```ts
 import { createClient } from "companycam";
 
-// Note that the baseURL field is optional.
-// Leave it undefined in your call to createClient to use the default URL.
+// create a client
 const client = createClient({
   authToken: "your access token",
 });
 
-// "Users > List" in the docs -> client.users.list()
+// "Users > List All Users" in the docs -> client.users.list()
 const users = await client.users.list();
 
-// "Projects > Create" in the docs -> client.projects.create()
+// "Projects > Create Project" in the docs -> client.projects.create()
 const project = await client.projects.create({
   /* fields taken from POST /projects in the spec */
 });
