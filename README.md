@@ -184,11 +184,7 @@ console.log(`Fetched ${allUsers.length} users`);
 
 ## Spec-Driven Approach
 
-We do everything we can to implement the entire [OpenAPI spec made public by CompanyCam](https://github.com/CompanyCam/openapi-spec).
-
-- The OpenAPI document `companycam-openapi-spec.yaml` is the single source of truth.
-- Generated interfaces in `src/interfaces.ts` and every resource method are rebuilt from the spec on each run.
-- No runtime behavior is hand-authored; any divergence should be reported so we can regenerate from the spec.
+We do everything we can to implement the entire [OpenAPI spec made public by CompanyCam](https://github.com/CompanyCam/openapi-spec). We cache this document locally in the repository to aid in AI-assisted development of this package. The local OpenAPI document `companycam-openapi-spec.yaml` is the single source of truth, and should be replaced with a newer version if it becomes out of date.
 
 ## Contributing
 
