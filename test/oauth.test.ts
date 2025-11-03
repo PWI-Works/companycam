@@ -5,14 +5,28 @@ import {
   buildAuthorizationGrantUrl,
   buildAuthorizationCodeTokenPayload,
   buildRefreshTokenPayload,
-} from "../src/uri.js";
+} from "../src/oauth.js";
 
 // The OAuth helper functions should mirror the documented authorization and token flows.
 describe("uri helpers", () => {
   describe("buildAuthorizationGrantUrl", () => {
+    it("throws when scope is an empty array", () => {
+      expect(() =>
+        buildAuthorizationGrantUrl(
+          "client-123",
+          "https://example.com/callback",
+          []
+        )
+      ).toThrow(/scope must not be an empty array/);
+    });
+
     it("includes the documented defaults when no optional overrides are supplied", () => {
       const redirectUri = "https://example.com/oauth/callback?foo=bar";
-      const result = buildAuthorizationGrantUrl("client-123", redirectUri);
+      const result = buildAuthorizationGrantUrl("client-123", redirectUri, [
+        "read",
+        "write",
+        "destroy",
+      ]);
       const parsed = new URL(result);
 
       expect(parsed.origin + parsed.pathname).toBe(AUTHORIZATION_ENDPOINT);
@@ -20,47 +34,45 @@ describe("uri helpers", () => {
       expect(parsed.searchParams.get("client_id")).toBe("client-123");
       expect(parsed.searchParams.get("redirect_uri")).toBe(redirectUri);
       expect(parsed.searchParams.get("scope")).toBe("read write destroy");
-      expect(parsed.searchParams.has("state")).toBe(false);
     });
 
-    it("applies custom scope ordering and state while trimming incidental whitespace", () => {
-      const result = buildAuthorizationGrantUrl("client-456", "https://example.com/callback", {
-        scope: ["write", "read"],
-        state: "csrf-token",
-      });
+    it("applies custom scope ordering while trimming incidental whitespace", () => {
+      const result = buildAuthorizationGrantUrl(
+        "client-456",
+        "https://example.com/callback",
+        ["write", "read"]
+      );
       const parsed = new URL(result);
 
       expect(parsed.searchParams.get("scope")).toBe("write read");
-      expect(parsed.searchParams.get("state")).toBe("csrf-token");
-    });
-
-    it("omits scope and state when the provided values are blank", () => {
-      const result = buildAuthorizationGrantUrl("client-789", "https://example.com/callback", {
-        scope: "",
-        state: "   ",
-      });
-      const parsed = new URL(result);
-
-      expect(parsed.searchParams.has("scope")).toBe(false);
-      expect(parsed.searchParams.has("state")).toBe(false);
     });
 
     it("throws when required parameters are empty", () => {
-      expect(() => buildAuthorizationGrantUrl("", "https://example.com/callback")).toThrow(
-        /clientId/i,
-      );
-      expect(() => buildAuthorizationGrantUrl("client-123", "")).toThrow(/redirectUri/i);
+      expect(() =>
+        buildAuthorizationGrantUrl("", "https://example.com/callback", [
+          "read",
+          "write",
+          "destroy",
+        ])
+      ).toThrow(/clientId/i);
+      expect(() =>
+        buildAuthorizationGrantUrl("client-123", "", [
+          "read",
+          "write",
+          "destroy",
+        ])
+      ).toThrow(/redirectUri/i);
     });
   });
 
   describe("buildAuthorizationCodeTokenPayload", () => {
     it("produces an authorization_code payload targeting the documented token endpoint", () => {
-      const payload = buildAuthorizationCodeTokenPayload({
-        clientId: "client-123",
-        clientSecret: "secret-456",
-        code: "auth-code",
-        redirectUri: "https://example.com/callback",
-      });
+      const payload = buildAuthorizationCodeTokenPayload(
+        "client-123",
+        "secret-456",
+        "auth-code",
+        "https://example.com/callback"
+      );
 
       expect(TOKEN_ENDPOINT).toBe("https://app.companycam.com/oauth/token");
       expect(payload.get("client_id")).toBe("client-123");
@@ -72,32 +84,32 @@ describe("uri helpers", () => {
 
     it("rejects empty required fields to prevent malformed requests", () => {
       expect(() =>
-        buildAuthorizationCodeTokenPayload({
-          clientId: "",
-          clientSecret: "secret",
-          code: "auth-code",
-          redirectUri: "https://example.com/callback",
-        }),
+        buildAuthorizationCodeTokenPayload(
+          "",
+          "secret",
+          "auth-code",
+          "https://example.com/callback"
+        )
       ).toThrow(/clientId/i);
 
       expect(() =>
-        buildAuthorizationCodeTokenPayload({
-          clientId: "client",
-          clientSecret: "",
-          code: "auth-code",
-          redirectUri: "https://example.com/callback",
-        }),
+        buildAuthorizationCodeTokenPayload(
+          "client",
+          "",
+          "auth-code",
+          "https://example.com/callback"
+        )
       ).toThrow(/clientSecret/i);
     });
   });
 
   describe("buildRefreshTokenPayload", () => {
     it("produces a refresh_token payload with the documented grant type", () => {
-      const payload = buildRefreshTokenPayload({
-        clientId: "client-321",
-        clientSecret: "secret-654",
-        refreshToken: "refresh-999",
-      });
+      const payload = buildRefreshTokenPayload(
+        "client-321",
+        "secret-654",
+        "refresh-999"
+      );
 
       expect(payload.get("client_id")).toBe("client-321");
       expect(payload.get("client_secret")).toBe("secret-654");
@@ -107,27 +119,15 @@ describe("uri helpers", () => {
 
     it("rejects empty required fields to prevent malformed requests", () => {
       expect(() =>
-        buildRefreshTokenPayload({
-          clientId: "",
-          clientSecret: "secret-654",
-          refreshToken: "refresh-999",
-        }),
+        buildRefreshTokenPayload("", "secret-654", "refresh-999")
       ).toThrow(/clientId/i);
 
       expect(() =>
-        buildRefreshTokenPayload({
-          clientId: "client-321",
-          clientSecret: "",
-          refreshToken: "refresh-999",
-        }),
+        buildRefreshTokenPayload("client-321", "", "refresh-999")
       ).toThrow(/clientSecret/i);
 
       expect(() =>
-        buildRefreshTokenPayload({
-          clientId: "client-321",
-          clientSecret: "secret-654",
-          refreshToken: "",
-        }),
+        buildRefreshTokenPayload("client-321", "secret-654", "")
       ).toThrow(/refreshToken/i);
     });
   });
