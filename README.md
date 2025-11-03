@@ -24,50 +24,89 @@ npm install companycam --save
 ## Quick Start
 
 ```ts
+// import the basic starter from the package
 import { createClient } from "companycam";
 
+// initialize the client
 const client = createClient({
-  baseURL: "https://api.companycam.com/v2",
-  authToken: process.env.COMPANYCAM_TOKEN,
+  authToken: "your access token",
 });
 
+// get first 50 projects
 const projects = await client.projects.list({ page: 1, per_page: 50 });
+// list
 console.log(projects.length);
 ```
 
 ## Basic Usage
 
-All objects and endpoints from the [CompanyCam API Documentation](https://docs.companycam.com/reference) are available for use. Calling them is intuitive and object-oriented.
+Our goal was to create an well-defined library that makes it easy to infer function names based on the [CompanyCam API reference](https://docs.companycam.com/reference).
 
-Sometimes the API needs slightly different fields when creating or updating an object.
-Usually, both create and update use only part of the full object's fields.
+Start by instantiating a client - everything else flows from that shared entry point. Each endpoint in the online API reference maps directly to a property and method on the client—`Projects -> Create Project` is accessed with `client.projects.create()`, `Users -> List All Users` is accessed with `client.users.list()`, and so on. This 1:1 naming keeps the docs and the SDK in sync, so you can easily translate examples from the documentation straight into code.
+
+```ts
+import { createClient } from "companycam";
+
+// Note that the baseURL field is optional.
+// Leave it undefined in your call to createClient to use the default URL.
+const client = createClient({
+  authToken: "your access token",
+});
+
+// "Users > List" in the docs -> client.users.list()
+const users = await client.users.list();
+
+// "Projects > Create" in the docs -> client.projects.create()
+const project = await client.projects.create({
+  /* fields taken from POST /projects in the spec */
+});
+```
+
+Explore the client object's namespaces in your editor to discover pagination helpers, filters, and other parameters documented in the API spec.
+
+### Typescript Interface Variants
+
+Sometimes the API needs slightly different fields when creating or updating an object. Usually, both create and update use only part of the full object's fields.
 
 When that happens, we follow this pattern:
 
 - If **create** and **update** endpoints use the same fields, we define a single `...Mutable` interface and use it for both.
 - If field requirements differ, we define two separate interfaces - `...CreatePayload` and `...UpdatePayload` - to clearly show what each one expects.
 
-### Example: Listing all Users with Pagination
+In addition, some `get` functions that support custom queries use our own `...QueryParams` interfaces.
+
+The best way to understand any of these interfaces is to use your IDE's inspect tool on the function. This ensures you're seeing and working with the version you have currently installed in your repository.
+
+### Example: Using Pagination
+
+The CompanyCam API documentation is not clear on when pagination is needed, but it does have a good pagination mechanism built in. Here is an example of using pagination to get all users in batches of 50. We chose 50 as a "safe" number - the actual limits may be higher.
 
 ```ts
 import { createClient, User, PaginationQueryParams } from "companycam";
 
+// We always create a client first. Ideally we create one that is shared
+// across the client code to avoid having to repeat ourselves over and over.
 const client = createClient({
-  baseURL: "https://api.companycam.com/v2",
-  authToken: process.env.COMPANYCAM_TOKEN,
+  authToken: "your access token",
 });
 
+// define the pagination limit
 const perPage = 50;
+// create an empty array to store all users found
 const allUsers: User[] = [];
 
 // Fetch each page until the API returns fewer records than requested.
 for (let page = 1; ; page += 1) {
+  // set up the pagination using a ...QueryParams interface
   const query: PaginationQueryParams = { page, per_page: perPage };
+  // fetch the users
   const usersFromQuery = await client.users.list(query);
 
   allUsers.push(...usersFromQuery);
 
-  // Stop once the most recent page is not full, signaling there are no more results.
+  // When the most recent page has fewer users than the limit, we can
+  // assume we're at the end of the list.
+  // If that's the case, we break the loop.
   if (usersFromQuery.length < perPage) {
     break;
   }
@@ -76,15 +115,14 @@ for (let page = 1; ; page += 1) {
 console.log(`Fetched ${allUsers.length} users`);
 ```
 
-### Example: Creating a User
+### Example: Using a ...CreatePayload interface to add a User
 
 ```ts
 import { createClient, User, UserCreatePayload } from "companycam";
 
 // set up the client
 const client = createClient({
-  baseURL: "https://api.companycam.com/v2",
-  authToken: process.env.COMPANYCAM_TOKEN,
+  authToken: "your access token",
 });
 
 // Prepare the payload following the POST /users schema.
@@ -105,7 +143,7 @@ const createdUser: User = await client.users.create(payload, {
 console.log(createdUser.id);
 ```
 
-## Working with AI Agents
+## Developing with AI Agents
 
 AI agents make coding fast and efficient. However, many agents struggle to understand the latest npm packages and how to use them correctly.
 
