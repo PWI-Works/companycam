@@ -14,3 +14,4 @@ export * from "./resources/Templates.js";
 export * from "./resources/Users.js";
 export * from "./resources/Webhooks.js";
 export * from "./resources/utils.js";
+export * from "./oauth.js";

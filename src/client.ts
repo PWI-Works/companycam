@@ -11,6 +11,11 @@ import { UsersResource } from "./resources/Users.js";
 import { WebhooksResource } from "./resources/Webhooks.js";
 
 /**
+ * The base URL for the CompanyCam API.
+ */
+export const BASE_CLIENT_URL = "https://api.companycam.com/v2";
+
+/**
  * Options accepted by {@link createClient}. Use these to point the SDK at the spec-defined
  * base URL, inject the bearer token, or override timeouts, retry behavior, and rate limiting.
  */
@@ -47,7 +52,11 @@ export interface CompanyCamClient {
  * @returns A structured client with helpers for each CompanyCam resource.
  */
 export function createClient(options: ClientOptions = {}): CompanyCamClient {
-  const http = new HttpClient(options);
+  const http = new HttpClient({
+    ...options,
+    // Default to the spec-defined base URL when the caller does not provide one.
+    baseURL: options.baseURL ?? BASE_CLIENT_URL,
+  });
 
   return {
     http,
