@@ -3,24 +3,22 @@
 [![npm version](https://img.shields.io/npm/v/companycam?color=orange&label=npm)](https://www.npmjs.com/package/companycam)
 [![Changelog](https://img.shields.io/badge/Changelog-View-blue)](./CHANGELOG.md)
 
-Welcome to the home of the unofficial [CompanyCam](https://companycam.com/) TypeScript SDK. This project turns the public OpenAPI specification into a modern, well-typed client that developers can rely on when integrating with the [CompanyCam API](https://docs.companycam.com/docs/welcome). We are glad you are here and would love your help shaping a dependable, community-driven toolkit.
+Welcome to the home of the unofficial [CompanyCam](https://companycam.com/) TypeScript SDK. This project was created to give developers an easy to use SDK for the [CompanyCam API](https://docs.companycam.com/docs/welcome). We are glad you are here and would love your help shaping a dependable, community-driven toolkit.
 
 Our focus is to provide:
 
-- **Accurate coverage of the API** by generating everything directly from the published OpenAPI spec.
-- **First-class TypeScript ergonomics** so you can enjoy autocompletion, type safety, and a predictable developer experience.
-- **Clear contribution paths** for anyone who wants to improve the SDK, documentation, or automation.
+- **Accurate coverage of the API** by basing all functionality directly from [CompanyCam's official OpenAPI spec](https://github.com/CompanyCam/openapi-spec)
+- **First-class TypeScript ergonomics** so you can enjoy autocompletion, type safety, and a predictable developer experience
+- **Clear contribution paths** for anyone who wants to improve the SDK, documentation, or automation
 
 > Note: this project is not officially supported by [CompanyCam](https://companycam.com/). We created it because our organization needed to implement an integration between CompanyCam and our own apps. We hope that you find this useful! Our use case is limited to our own implementation, so there may be issues related to features we aren't using. Please feel free to contribute or report any issues that you find when using this library.
 
-This repository publishes the TypeScript SDK straight from the authoritative `companycam-openapi-spec.yaml`, so the runtime behavior, request shapes, and response typings stay in lockstep with the public specification.
-
 ## Installation
 
-This repository is published to npm as [companycam](https://www.npmjs.com/package/companycam).
+This repository is published to [npm](https://www.npmjs.com/) as [companycam](https://www.npmjs.com/package/companycam).
 
 ```sh
-npm install companycam
+npm install companycam --save
 ```
 
 ## Quick Start
@@ -38,6 +36,7 @@ console.log(projects.length);
 ```
 
 ## Basic Usage
+
 All objects and endpoints from the [CompanyCam API Documentation](https://docs.companycam.com/reference) are available for use. Calling them is intuitive and object-oriented.
 
 Sometimes the API needs slightly different fields when creating or updating an object.
@@ -45,8 +44,8 @@ Usually, both create and update use only part of the full object's fields.
 
 When that happens, we follow this pattern:
 
-* If **create** and **update** endpoints use the same fields, we define a single `...Mutable` interface and use it for both.
-* If field requirements differ, we define two separate interfaces - `...CreatePayload` and `...UpdatePayload` - to clearly show what each one expects.
+- If **create** and **update** endpoints use the same fields, we define a single `...Mutable` interface and use it for both.
+- If field requirements differ, we define two separate interfaces - `...CreatePayload` and `...UpdatePayload` - to clearly show what each one expects.
 
 ### Example: Listing all Users with Pagination
 
@@ -78,6 +77,7 @@ console.log(`Fetched ${allUsers.length} users`);
 ```
 
 ### Example: Creating a User
+
 ```ts
 import { createClient, User, UserCreatePayload } from "companycam";
 
@@ -106,6 +106,7 @@ console.log(createdUser.id);
 ```
 
 ## Working with AI Agents
+
 AI agents make coding fast and efficient. However, many agents struggle to understand the latest npm packages and how to use them correctly.
 
 The ideal solution is to write an MCP server for your package. However, to keep things simple, we've provided the next best option: an agent prompt file designed for working with agents. You can find it at [AGENT_PROMPT.md](AGENT_PROMPT.md).
