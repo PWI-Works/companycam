@@ -5,7 +5,9 @@ export const AUTHORIZATION_ENDPOINT =
   "https://app.companycam.com/oauth/authorize";
 
 /** OAuth 2.0 token endpoint documented in the public OAuth guide. */
-export const TOKEN_ENDPOINT = "https://app.companycam.com/oauth/token";
+export const TOKEN_ENDPOINT = "https://app.companycam.com/oauth/token"; 
+
+/** Parsed URL object for the OAuth token endpoint. */
 const TOKEN_URL = new URL(TOKEN_ENDPOINT);
 
 /** Default scopes requested when none are explicitly provided by the caller. */
