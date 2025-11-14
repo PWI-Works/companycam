@@ -1,3 +1,5 @@
+import { HttpClient } from "./http/HttpClient.js";
+
 /** OAuth 2.0 authorization endpoint documented in the public OAuth guide. */
 export const AUTHORIZATION_ENDPOINT =
   "https://app.companycam.com/oauth/authorize";
@@ -5,11 +7,31 @@ export const AUTHORIZATION_ENDPOINT =
 /** OAuth 2.0 token endpoint documented in the public OAuth guide. */
 export const TOKEN_ENDPOINT = "https://app.companycam.com/oauth/token";
 
+/** Parsed URL object for the OAuth token endpoint. */
+const TOKEN_URL = new URL(TOKEN_ENDPOINT);
+
 /** Default scopes requested when none are explicitly provided by the caller. */
 export const DEFAULT_OAUTH_SCOPES = ["read", "write", "destroy"] as const;
 
 /** All valid OAuth scopes. */
 export type OAuthScope = "read" | "write" | "destroy";
+
+/**
+ * Shape of the payload returned by the OAuth token endpoint. These fields follow the
+ * standard OAuth 2.0 token response, which the CompanyCam OAuth server mirrors.
+ */
+export interface OAuthTokenResponse {
+  /** Bearer token used to authenticate subsequent CompanyCam API requests. */
+  access_token: string;
+  /** Token classification as reported by the OAuth server, typically "bearer". */
+  token_type: string;
+  /** Lifetime of the access token in seconds when supplied by the OAuth server. */
+  expires_in?: number;
+  /** Refresh token that can be exchanged for a fresh access token. */
+  refresh_token?: string;
+  /** Granted scopes represented as a space-delimited string, when returned. */
+  scope?: string;
+}
 
 /**
  * Build the authorization redirect URL that initiates the OAuth 2.0 authorization-code flow.
@@ -45,23 +67,21 @@ export function buildAuthorizationGrantUrl(
 }
 
 /**
- * Build the form payload for exchanging an authorization code for access and refresh tokens.
- *
- * The OAuth documentation specifies the request must be
- * `application/x-www-form-urlencoded`, which aligns with {@link URLSearchParams}.
+ * Exchange an authorization code for access and refresh tokens by POSTing the documented
+ * form-encoded payload directly to the OAuth token endpoint.
  *
  * @param clientId Identifier issued by CompanyCam for the external integration.
  * @param clientSecret Secret paired with the client identifier.
  * @param code Authorization code received from the authorization grant.
  * @param redirectUri Redirect URI used during the authorization grant.
- * @returns URL encoded payload ready for POSTing to the token endpoint.
+ * @returns Promise that resolves with the OAuth token response body.
  */
-export function buildAuthorizationCodeTokenPayload(
+export async function getAccessToken(
   clientId: string,
   clientSecret: string,
   code: string,
   redirectUri: string
-): URLSearchParams {
+): Promise<OAuthTokenResponse> {
   assertNonEmpty(clientId, "clientId");
   assertNonEmpty(clientSecret, "clientSecret");
   assertNonEmpty(code, "code");
@@ -73,25 +93,23 @@ export function buildAuthorizationCodeTokenPayload(
   params.append("code", code);
   params.append("grant_type", "authorization_code");
   params.append("redirect_uri", redirectUri);
-  return params;
+  return executeTokenExchange(params);
 }
 
 /**
- * Build the form payload for exchanging a refresh token for a new access token.
- *
- * Each refresh operation yields a brand new refresh token; callers should persist both
- * values on every successful response.
+ * Exchange a refresh token for a brand new access token directly against the OAuth
+ * token endpoint. Each response includes a new refresh token when the server issues one.
  *
  * @param clientId Identifier issued by CompanyCam for the external integration.
  * @param clientSecret Secret paired with the client identifier.
  * @param refreshToken Refresh token obtained from a prior token exchange.
- * @returns URL encoded payload ready for POSTing to the token endpoint.
+ * @returns Promise that resolves with the OAuth token response body.
  */
-export function buildRefreshTokenPayload(
+export async function refreshAccessToken(
   clientId: string,
   clientSecret: string,
   refreshToken: string
-): URLSearchParams {
+): Promise<OAuthTokenResponse> {
   assertNonEmpty(clientId, "clientId");
   assertNonEmpty(clientSecret, "clientSecret");
   assertNonEmpty(refreshToken, "refreshToken");
@@ -101,7 +119,7 @@ export function buildRefreshTokenPayload(
   params.append("client_secret", clientSecret);
   params.append("refresh_token", refreshToken);
   params.append("grant_type", "refresh_token");
-  return params;
+  return executeTokenExchange(params);
 }
 
 /**
@@ -146,4 +164,40 @@ function assertNonEmpty(value: string, label: string): void {
   if (typeof value !== "string" || value.trim().length === 0) {
     throw new Error(`${label} must be a non-empty string.`);
   }
+}
+
+let tokenHttpClient: HttpClient | null = null;
+
+/**
+ * Lazily instantiate the HTTP client pointed at the OAuth token endpoint so we can apply
+ * the same retry, timeout, and rate-limiting defaults used throughout the SDK.
+ */
+function getTokenHttpClient(): HttpClient {
+  if (!tokenHttpClient) {
+    tokenHttpClient = new HttpClient({
+      baseURL: TOKEN_URL.origin,
+    });
+  }
+  return tokenHttpClient;
+}
+
+/**
+ * Submit the encoded token payload to the OAuth token endpoint and surface the response body.
+ *
+ * @param payload URL-encoded data prepared by the calling helper.
+ * @returns Promise resolving with the parsed OAuth token response.
+ */
+async function executeTokenExchange(
+  payload: URLSearchParams
+): Promise<OAuthTokenResponse> {
+  const http = getTokenHttpClient();
+  const response = await http.request<OAuthTokenResponse>({
+    method: "POST",
+    url: `${TOKEN_URL.pathname}${TOKEN_URL.search}`,
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    data: payload,
+  });
+  return response.data;
 }
