@@ -1,4 +1,5 @@
 import { HttpClient } from "./http/HttpClient.js";
+import { OAuthTokenResponse } from "./interfaces.js";
 
 /** OAuth 2.0 authorization endpoint documented in the public OAuth guide. */
 export const AUTHORIZATION_ENDPOINT =
@@ -15,23 +16,6 @@ export const DEFAULT_OAUTH_SCOPES = ["read", "write", "destroy"] as const;
 
 /** All valid OAuth scopes. */
 export type OAuthScope = "read" | "write" | "destroy";
-
-/**
- * Shape of the payload returned by the OAuth token endpoint. These fields follow the
- * standard OAuth 2.0 token response, which the CompanyCam OAuth server mirrors.
- */
-export interface OAuthTokenResponse {
-  /** Bearer token used to authenticate subsequent CompanyCam API requests. */
-  access_token: string;
-  /** Token classification as reported by the OAuth server, typically "bearer". */
-  token_type: string;
-  /** Lifetime of the access token in seconds when supplied by the OAuth server. */
-  expires_in?: number;
-  /** Refresh token that can be exchanged for a fresh access token. */
-  refresh_token?: string;
-  /** Granted scopes represented as a space-delimited string, when returned. */
-  scope?: string;
-}
 
 /**
  * Build the authorization redirect URL that initiates the OAuth 2.0 authorization-code flow.

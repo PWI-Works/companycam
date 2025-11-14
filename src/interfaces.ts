@@ -651,3 +651,20 @@ export interface ListPhotosQueryParams extends PaginationQueryParams {
   /** Filter results to include photos captured by one of these tag IDs */
   tag_ids?: Array<number>;
 }
+
+/**
+ * Shape of the payload returned by the OAuth token endpoint. These fields follow the
+ * standard OAuth 2.0 token response, which the CompanyCam OAuth server mirrors.
+ */
+export interface OAuthTokenResponse {
+  /** Bearer token used to authenticate subsequent CompanyCam API requests. */
+  access_token: string;
+  /** Token classification as reported by the OAuth server, typically "bearer". */
+  token_type: string;
+  /** Lifetime of the access token in seconds when supplied by the OAuth server. */
+  expires_in?: number;
+  /** Refresh token that can be exchanged for a fresh access token. */
+  refresh_token?: string;
+  /** Granted scopes represented as a space-delimited string, when returned. */
+  scope?: string;
+}
